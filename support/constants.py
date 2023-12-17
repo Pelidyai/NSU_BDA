@@ -25,7 +25,6 @@ SCALER_PATH: str = get_path(file_dir, 'models/scaler/scaler.pickle')
 X_TRAIN_PATH: str = get_path(file_dir, "data/X_train.csv")
 PREP_X_TRAIN_PATH: str = get_path(file_dir, "data/prep_X_train.csv")
 X_TEST_PATH: str = get_path(file_dir, "data/X_test.csv")
-PREP_X_TEST_PATH: str = get_path(file_dir, "data/X_test.csv")
 
 Y_TRAIN_PATH: str = get_path(file_dir, "data/Y_train.csv")
 Y_TRAIN_NORM_PATH: str = get_path(file_dir, "data/Y_train_norm.csv")

@@ -95,8 +95,8 @@ def preprocess_data(data: DataFrame,
     if not skip_models_text_preprocessing:
         data = preprocess_text_with_model(data, BERT_BASED_NAME_CHECKPOINT_DIR, 'name')
         data = preprocess_text_with_model(data, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, 'description')
-    if not skip_obj_to_cat:
-        data = preprocess_employer_name(data)
+    # if not skip_obj_to_cat:
+    #     data = preprocess_employer_name(data)
     return data
 
 

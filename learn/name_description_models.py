@@ -11,8 +11,8 @@ from preprocessing.preprocessing import inverse
 from support.constants import NAME_DESC_MODELS_DIR, TARGET_NAME
 from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_norm_data, load_y_train_data
 
-FEATURES = [*[f"name_{i}" for i in range(BERT_MODEL_OUT_SIZE)],
-            *[f"description_{i}" for i in range(BERT_MODEL_OUT_SIZE)]]
+NAMES_AND_DESC_FEATURES = [*[f"name_{i}" for i in range(BERT_MODEL_OUT_SIZE)],
+                           *[f"description_{i}" for i in range(BERT_MODEL_OUT_SIZE)]]
 
 
 def get_min_model_error(models_dir):
@@ -53,14 +53,14 @@ def main():
     x_data = load_x_prepared_train_data()
     y_data = load_y_train_norm_data()
 
-    x_data = np.asarray(x_data[FEATURES]).astype('float32')
+    x_data = np.asarray(x_data[NAMES_AND_DESC_FEATURES]).astype('float32')
     y_data = np.asarray(y_data[TARGET_NAME]).astype('float32')
     train(x_data, y_data, NAME_DESC_MODELS_DIR, RandomForestRegressor(n_estimators=100, max_features=5))
 
 
 def main_test():
     x_data = load_x_prepared_train_data()
-    x_data = np.asarray(x_data[FEATURES]).astype('float32')
+    x_data = np.asarray(x_data[NAMES_AND_DESC_FEATURES]).astype('float32')
 
     y_data = load_y_train_data()
     y_data = np.asarray(y_data[TARGET_NAME]).astype('float32')

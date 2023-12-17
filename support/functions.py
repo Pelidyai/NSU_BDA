@@ -8,7 +8,7 @@ from pandas import DataFrame
 import tensorflow.python.keras.backend as K
 
 from support.constants import X_TRAIN_PATH, Y_TRAIN_PATH, PREP_X_TRAIN_PATH, Y_TRAIN_NORM_PATH, \
-    X_TEST_PATH, PREP_X_TEST_PATH
+    X_TEST_PATH
 
 
 def smape_loss(y_true, y_pred):
@@ -39,11 +39,6 @@ def prepare_text(string: str) -> str:
 
 def load_x_test_data() -> DataFrame:
     test_data = pd.read_csv(X_TEST_PATH)
-    return test_data
-
-
-def load_x_prepared_test_data() -> DataFrame:
-    test_data = pd.read_csv(PREP_X_TEST_PATH)
     return test_data
 
 

@@ -1,3 +1,6 @@
+import pickle
+from typing import Any
+
 import tensorflow as tf
 import tensorflow_hub as hub
 from sklearn.neural_network import MLPRegressor
@@ -6,6 +9,7 @@ from tensorflow.python.keras import activations
 import tensorflow_text as text
 
 from support.bert import BERT_PREPROCESS_LINK, BERT_ENCODER_LINK
+from support.constants import NAME_DESC_MODELS_DIR
 
 tf.get_logger().setLevel('ERROR')
 
@@ -50,3 +54,8 @@ def load_work_text_model(checkpoint_dir: str) -> BertBasedModel:
 
 def create_name_description_model() -> MLPRegressor:
     return MLPRegressor(hidden_layer_sizes=(8, 8, 1))
+
+
+def load_name_desc_model() -> Any:
+    with open(NAME_DESC_MODELS_DIR + "/best.pickaim", 'rb') as file:
+        return pickle.load(file)
