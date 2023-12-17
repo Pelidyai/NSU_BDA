@@ -11,8 +11,16 @@ def preprocess_text(data: DataFrame, key: str) -> DataFrame:
     print(f'Start preprocess key - {key}')
     prepared_frame = key_frame.apply(prepare_text)
     print(f'End preprocess key - {key}')
+    prepared_frame = prepared_frame.fillna('empty')
     data[key] = prepared_frame
     return data
+
+
+def cut(arrays, idx) -> list:
+    result = []
+    for array in arrays:
+        result.append(array[idx])
+    return result
 
 
 def preprocess_text_with_model(data: DataFrame, checkpoint_dir: str, x_key: str) -> DataFrame:
@@ -24,10 +32,12 @@ def preprocess_text_with_model(data: DataFrame, checkpoint_dir: str, x_key: str)
     i = 0
     print(f'Start model preprocess text key - {x_key}')
     for batch in batches:
-        output.extend(loaded_model(batch))
+        output.extend(loaded_model(batch).numpy())
         i += 1
         print(f'Model preprocess {i}/{len(batches)} batches')
-    data[f'{x_key}'] = output
+    data = data.drop([x_key], axis=1)
+    for i in range(len(output[0])):
+        data[f'{x_key}_{i}'] = cut(output, i)
     print(f'End model preprocess text key - {x_key}')
     return data
 
@@ -36,6 +46,7 @@ def preprocess_data(data: DataFrame,
                     skip_drop: bool = False,
                     skip_text_preprocessing: bool = False,
                     skip_models_text_preprocessing: bool = False) -> DataFrame:
+    data = data[:32]
     if not skip_drop:
         try:
             data = data.drop(['area_id', 'published_at', 'created_at', 'salary_currency'], axis=1)
