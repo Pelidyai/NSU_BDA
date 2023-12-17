@@ -32,9 +32,6 @@ def main():
     data[TARGET_NAME] = load_y_train_data()[TARGET_NAME]
     create_and_learn_text_model(data, 'name', "bert_name_to_5_1", BERT_BASED_NAME_CHECKPOINT_DIR)
     create_and_learn_text_model(data, 'description', "bert_desc_to_5_1", BERT_BASED_DESCRIPTION_CHECKPOINT_DIR)
-    # create_and_learn_description_model(data)
-    # x, y = extract_x_y(data, 'name', TARGET_NAME)
-    # x = None
 
 
 if __name__ == '__main__':

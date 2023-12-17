@@ -72,10 +72,10 @@ class BertBasedModel(tf.keras.Model):
 
 
 def load_work_text_model(checkpoint_dir: str) -> BertBasedModel:
-    model = BertBasedModel(is_work=True)
+    loaded_model = BertBasedModel(is_work=True)
     latest = tf.train.latest_checkpoint(checkpoint_dir)
-    model.load_weights(latest)
-    return model
+    loaded_model.load_weights(latest)
+    return loaded_model
 
 
 # model = load_work_text_model(BERT_BASED_NAME_CHECKPOINT_DIR)
