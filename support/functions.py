@@ -1,3 +1,4 @@
+import os
 import re
 from typing import Any
 
@@ -69,3 +70,16 @@ def split_to_batches(any_list: list[Any], batch_size: int) -> list[Any]:
 def __divide_chunks(any_list: list[Any], chunk_size: int):
     for i in range(0, len(any_list), chunk_size):
         yield any_list[i: i + chunk_size]
+
+
+def get_min_model_error(models_dir):
+    min_error = 10000
+    for file in os.listdir(models_dir):
+        file = file.replace('best', '')
+        file = file.replace('.pickaim', '')
+        error = min_error
+        if file != '':
+            error = float(file)
+        if error < min_error:
+            min_error = error
+    return min_error

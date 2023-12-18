@@ -7,20 +7,8 @@ from sklearn.model_selection import train_test_split
 
 from preprocessing.preprocessing import inverse
 from support.constants import NAME_DESC_MODELS_DIR, TARGET_NAME, NAMES_AND_DESC_FEATURES
-from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_norm_data, load_y_train_data
-
-
-def get_min_model_error(models_dir):
-    min_error = 10000
-    for file in os.listdir(models_dir):
-        file = file.replace('best', '')
-        file = file.replace('.pickaim', '')
-        error = min_error
-        if file != '':
-            error = float(file)
-        if error < min_error:
-            min_error = error
-    return min_error
+from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_norm_data, load_y_train_data, \
+    get_min_model_error
 
 
 def train(x, y, save_dir, model, n=100):
