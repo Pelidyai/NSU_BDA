@@ -4,15 +4,10 @@ import pickle
 import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
-from sklearn.neural_network import MLPRegressor
 
-from models_creation import BERT_MODEL_OUT_SIZE
 from preprocessing.preprocessing import inverse
-from support.constants import NAME_DESC_MODELS_DIR, TARGET_NAME
+from support.constants import NAME_DESC_MODELS_DIR, TARGET_NAME, NAMES_AND_DESC_FEATURES
 from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_norm_data, load_y_train_data
-
-NAMES_AND_DESC_FEATURES = [*[f"name_{i}" for i in range(BERT_MODEL_OUT_SIZE)],
-                           *[f"description_{i}" for i in range(BERT_MODEL_OUT_SIZE)]]
 
 
 def get_min_model_error(models_dir):

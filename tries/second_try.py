@@ -2,10 +2,9 @@ import numpy as np
 import pandas as pd
 from pandas import DataFrame
 
-from learn.name_description_models import NAMES_AND_DESC_FEATURES
 from models_creation import load_name_desc_model
 from preprocessing.preprocessing import inverse, preprocess_data
-from support.constants import TARGET_NAME
+from support.constants import TARGET_NAME, NAMES_AND_DESC_FEATURES
 from support.functions import load_x_test_data
 
 

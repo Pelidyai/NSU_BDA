@@ -29,7 +29,15 @@ X_TEST_PATH: str = get_path(file_dir, "data/X_test.csv")
 Y_TRAIN_PATH: str = get_path(file_dir, "data/Y_train.csv")
 Y_TRAIN_NORM_PATH: str = get_path(file_dir, "data/Y_train_norm.csv")
 
+
+BERT_MODEL_OUT_SIZE = 32
+
+NAMES_AND_DESC_FEATURES = [*[f"name_{i}" for i in range(BERT_MODEL_OUT_SIZE)],
+                           *[f"description_{i}" for i in range(BERT_MODEL_OUT_SIZE)]]
+
 TRAIN_FEATURE = ['name', 'has_test', 'response_letter_required', 'salary_from', 'salary_currency', 'salary_gross',
                  'published_at', 'created_at', 'employer_name', 'description', 'area_id', 'area_name']
 TARGET_NAME = 'salary_to'
+
+NAME_DESC_PREDICTION_KEY = 'salary_to_by_name_desc'
 

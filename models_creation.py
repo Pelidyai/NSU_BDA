@@ -9,7 +9,7 @@ from tensorflow.python.keras import activations
 import tensorflow_text as text
 
 from support.bert import BERT_PREPROCESS_LINK, BERT_ENCODER_LINK
-from support.constants import NAME_DESC_MODELS_DIR
+from support.constants import NAME_DESC_MODELS_DIR, BERT_MODEL_OUT_SIZE
 
 tf.get_logger().setLevel('ERROR')
 
@@ -25,8 +25,6 @@ def _build_bert() -> tf.keras.Model:
     result_model.trainable = False
     return result_model
 
-
-BERT_MODEL_OUT_SIZE = 32
 
 
 class BertBasedModel(tf.keras.Model):

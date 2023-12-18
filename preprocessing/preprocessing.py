@@ -4,8 +4,9 @@ from typing import Iterable
 import numpy as np
 from pandas import DataFrame
 
-from models_creation import load_work_text_model
-from support.constants import BERT_BASED_NAME_CHECKPOINT_DIR, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR
+from models_creation import load_work_text_model, load_name_desc_model
+from support.constants import BERT_BASED_NAME_CHECKPOINT_DIR, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
+    NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES
 from support.functions import prepare_text, split_to_batches
 
 
@@ -76,11 +77,20 @@ def preprocess_employer_name(data: DataFrame) -> DataFrame:
     # counts = None
 
 
+def add_prediction_by_name_desc(data: DataFrame) -> DataFrame:
+    x = np.asarray(data[NAMES_AND_DESC_FEATURES]).astype('float32')
+    model = load_name_desc_model()
+    y = np.asarray(model.predict(x)).astype('float32')
+    data = data.drop(NAMES_AND_DESC_FEATURES, axis=1)
+    data[NAME_DESC_PREDICTION_KEY] = y
+    return data
+
+
 def preprocess_data(data: DataFrame,
                     skip_drop: bool = False,
                     skip_text_preprocessing: bool = False,
                     skip_models_text_preprocessing: bool = False,
-                    skip_obj_to_cat: bool = False) -> DataFrame:
+                    skip_name_desc_prediction: bool = False) -> DataFrame:
     data = data.copy()
     if not skip_drop:
         try:
@@ -95,8 +105,8 @@ def preprocess_data(data: DataFrame,
     if not skip_models_text_preprocessing:
         data = preprocess_text_with_model(data, BERT_BASED_NAME_CHECKPOINT_DIR, 'name')
         data = preprocess_text_with_model(data, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, 'description')
-    # if not skip_obj_to_cat:
-    #     data = preprocess_employer_name(data)
+    if not skip_name_desc_prediction:
+        data = add_prediction_by_name_desc(data)
     return data
 
 
