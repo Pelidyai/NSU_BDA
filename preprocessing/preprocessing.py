@@ -153,6 +153,12 @@ def preprocess_employer_name_to_int(data: DataFrame) -> DataFrame:
     return data
 
 
+def preprocess_salary_gross(data: DataFrame) -> DataFrame:
+    key = "salary_gross"
+    data[key] = data[key].fillna(False)
+    return data
+
+
 def preprocess_area_name_to_int(data: DataFrame) -> DataFrame:
     key = "area_name"
     keyframe = data[key]
@@ -174,27 +180,31 @@ def preprocess_data(data: DataFrame,
                     skip_drop: bool = False,
                     skip_text_preprocessing: bool = False,
                     skip_models_text_preprocessing: bool = False,
-                    skip_name_desc_prediction: bool = False) -> DataFrame:
+                    skip_name_desc_prediction: bool = False,
+                    skip_simple_mappings: bool = False) -> DataFrame:
     data = data.copy()
     if not skip_drop:
         try:
-            data = data.drop(['area_id', 'published_at', 'created_at', 'salary_currency'], axis=1)
+            data = data.drop(['area_id', 'published_at', 'created_at','salary_currency'], axis=1)
         except Exception:
             pass
-    if not skip_text_preprocessing:
+    if not skip_text_preprocessing:  # 1
         data = preprocess_text(data, 'name')
         data = preprocess_text(data, 'description')
         data = preprocess_area_name(data)
         data = preprocess_employer_name(data)
-    if not skip_models_text_preprocessing:
+    if not skip_models_text_preprocessing:  # 2
         data = preprocess_text_with_model(data, BERT_BASED_NAME_CHECKPOINT_DIR, 'name')
         data = preprocess_text_with_model(data, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, 'description')
-    if not skip_name_desc_prediction:
+    if not skip_name_desc_prediction:  # 3
         data = add_prediction_by_name_desc(data)
-    data = preprocess_employer_name_to_int(data)
-    data = preprocess_area_name_to_int(data)
-    data.has_test = data.has_test.replace({True: 1, False: 0})
-    data.response_letter_required = data.response_letter_required.replace({True: 1, False: 0})
+    if not skip_simple_mappings:  # 4
+        data = preprocess_salary_gross(data)
+        data = preprocess_employer_name_to_int(data)
+        data = preprocess_area_name_to_int(data)
+        data.salary_gross = data.salary_gross.replace({True: 1, False: 0})
+        data.has_test = data.has_test.replace({True: 1, False: 0})
+        data.response_letter_required = data.response_letter_required.replace({True: 1, False: 0})
     return data
 
 
