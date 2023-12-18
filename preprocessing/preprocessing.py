@@ -53,28 +53,112 @@ def preprocess_text_with_model(data: DataFrame, checkpoint_dir: str, x_key: str)
 
 
 def get_first(string: str) -> str:
-    return string.split(' ')[0]
+    result = string.split(' ')[0]
+    if result == '':
+        return string
+    return result
+
+
+def simple_text_preprocess(string: str) -> str:
+    string = string.lower()
+    return string.replace('ё', 'е')
+
+
+def preprocess_area_name(data: DataFrame) -> DataFrame:
+    key = "area_name"
+    keyframe = data[key]
+    keyframe = keyframe.apply(simple_text_preprocess)
+    data[key] = keyframe
+    return data
+
+
+TOP_20_EMPLOYER = {
+    "пятерочка",
+    "перекресток",
+    "билайн",
+    "группа",
+    "центр",
+    "школа",
+    "агентство",
+    "компания",
+    "гк",
+    "сеть",
+    "ип",
+    "гбу",
+    "кадровое",
+    "jcat.ru",
+    "hr",
+    "университет",
+    "skyeng",
+    "лаборатория",
+    "гбуз",
+    "детский"
+}
+
+
+TOP_20_AREAS = {
+    "москва",
+    "санкт-,петербург"
+    "новосибирск",
+    "краснодар",
+    "екатеринбург",
+    "казань",
+    "нижний новгород,"
+    "ростов-,на-дону"
+    "самара",
+    "томск",
+    "воронеж",
+    "минск",
+    "пермь",
+    "челябинск",
+    "уфа",
+    "саратов",
+    "тула",
+    "калининград",
+    "омск",
+    "красноярск"
+}
+
+
+def is_top_20_employer(employer_name: str) -> int:
+    if isinstance(employer_name, int):
+        return employer_name
+    if employer_name in TOP_20_EMPLOYER:
+        return 1
+    return 0
+
+
+def is_top_20_area(area_name: str) -> int:
+    if isinstance(area_name, int):
+        return area_name
+    if area_name in TOP_20_AREAS:
+        return 1
+    return 0
 
 
 def preprocess_employer_name(data: DataFrame) -> DataFrame:
     key = "employer_name"
-    data = preprocess_text(data, key)
     keyframe = data[key]
+    keyframe = keyframe.apply(simple_text_preprocess)
     keyframe = keyframe.apply(get_first)
     data[key] = keyframe
     return data
 
-    # count_series = data[key].value_counts()
-    # counts = count_series.to_numpy()
-    # max_idx = max(0, len(counts) - 1)
-    # top_3_frontier = counts(min(3, max_idx))
-    # top_100_frontier = counts(min(100, max_idx))
-    # top_3_flags = []
-    # top_100_flags = []
-    # for employer_name in data[key]:
-    #     top_3_flags.append(count_series[employer_name].to_numpy() > top_3_frontier)
-    #     top_100_flags.append(count_series[employer_name].to_numpy() > top_100_frontier)
-    # counts = None
+
+def preprocess_employer_name_to_int(data: DataFrame) -> DataFrame:
+    key = "employer_name"
+    keyframe = data[key]
+    keyframe = keyframe.apply(is_top_20_employer)
+    data[key] = keyframe
+    return data
+
+
+def preprocess_area_name_to_int(data: DataFrame) -> DataFrame:
+    key = "area_name"
+    keyframe = data[key]
+    keyframe = keyframe.apply(is_top_20_area)
+    data[key] = keyframe
+    return data
 
 
 def add_prediction_by_name_desc(data: DataFrame) -> DataFrame:
@@ -100,13 +184,17 @@ def preprocess_data(data: DataFrame,
     if not skip_text_preprocessing:
         data = preprocess_text(data, 'name')
         data = preprocess_text(data, 'description')
-        data = preprocess_text(data, 'area_name')
+        data = preprocess_area_name(data)
         data = preprocess_employer_name(data)
     if not skip_models_text_preprocessing:
         data = preprocess_text_with_model(data, BERT_BASED_NAME_CHECKPOINT_DIR, 'name')
         data = preprocess_text_with_model(data, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, 'description')
     if not skip_name_desc_prediction:
         data = add_prediction_by_name_desc(data)
+    data = preprocess_employer_name_to_int(data)
+    data = preprocess_area_name_to_int(data)
+    data.has_test = data.has_test.replace({True: 1, False: 0})
+    data.response_letter_required = data.response_letter_required.replace({True: 1, False: 0})
     return data
 
 
