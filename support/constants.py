@@ -13,7 +13,7 @@ def get_path(dir_to_search: str, file_to_search: str):
         return os.path.join(dir_to_search, file_to_search)
 
 
-SALARY_GROSS_RECOVER_MODELS_DIR: str = get_path(file_dir, 'models/salary_gross')
+SALARY_FROM_RECOVER_MODELS_DIR: str = get_path(file_dir, 'models/salary_from')
 NAME_DESC_MODELS_DIR: str = get_path(file_dir, 'models/name_desc')
 
 BERT_BASED_NAME_CHECKPOINT_DIR: str = get_path(file_dir, 'models/name')
@@ -40,4 +40,5 @@ TRAIN_FEATURE = ['name', 'has_test', 'response_letter_required', 'salary_from', 
 TARGET_NAME = 'salary_to'
 
 NAME_DESC_PREDICTION_KEY = 'salary_to_by_name_desc'
+SALARY_FROM_KEY = 'salary_from'
 
