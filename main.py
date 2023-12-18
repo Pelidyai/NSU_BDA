@@ -10,7 +10,7 @@ def main_x():
     data = load_x_prepared_train_data()
     data = preprocess_data(data, skip_drop=True, skip_text_preprocessing=True,
                            skip_models_text_preprocessing=True, skip_name_desc_prediction=True,
-                           skip_simple_mappings=False)
+                           skip_simple_mappings=True, skip_filling=False)
     data.to_csv(PREP_X_TRAIN_PATH, index=False)
 
 

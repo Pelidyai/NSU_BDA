@@ -9,7 +9,7 @@ from tensorflow.python.keras import activations
 import tensorflow_text as text
 
 from support.bert import BERT_PREPROCESS_LINK, BERT_ENCODER_LINK
-from support.constants import NAME_DESC_MODELS_DIR, BERT_MODEL_OUT_SIZE
+from support.constants import NAME_DESC_MODELS_DIR, BERT_MODEL_OUT_SIZE, SALARY_FROM_RECOVER_MODELS_DIR
 
 tf.get_logger().setLevel('ERROR')
 
@@ -56,4 +56,9 @@ def create_name_description_model() -> MLPRegressor:
 
 def load_name_desc_model() -> Any:
     with open(NAME_DESC_MODELS_DIR + "/best.pickaim", 'rb') as file:
+        return pickle.load(file)
+
+
+def load_salary_from_model() -> Any:
+    with open(SALARY_FROM_RECOVER_MODELS_DIR + "/best.pickaim", 'rb') as file:
         return pickle.load(file)

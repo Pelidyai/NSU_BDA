@@ -4,9 +4,9 @@ from typing import Iterable
 import numpy as np
 from pandas import DataFrame
 
-from models_creation import load_work_text_model, load_name_desc_model
+from models_creation import load_work_text_model, load_name_desc_model, load_salary_from_model
 from support.constants import BERT_BASED_NAME_CHECKPOINT_DIR, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
-    NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES
+    NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES, SALARY_FROM_KEY
 from support.functions import prepare_text, split_to_batches
 
 
@@ -176,12 +176,28 @@ def add_prediction_by_name_desc(data: DataFrame) -> DataFrame:
     return data
 
 
+def fill_salary_from(data: DataFrame) -> DataFrame:
+    x_data = data.copy()
+    x_data_index = x_data[SALARY_FROM_KEY].isna()
+    x = x_data[x_data_index]
+
+    x = x.drop([SALARY_FROM_KEY, 'id'], axis=1)
+    x = np.asarray(x).astype('float32')
+    model = load_salary_from_model()
+    y = np.asarray(model.predict(x)).astype('float32')
+    copy = data[x_data_index].copy()
+    copy[SALARY_FROM_KEY] = inverse(y)
+    data[x_data_index] = copy
+    return data
+
+
 def preprocess_data(data: DataFrame,
                     skip_drop: bool = False,
                     skip_text_preprocessing: bool = False,
                     skip_models_text_preprocessing: bool = False,
                     skip_name_desc_prediction: bool = False,
-                    skip_simple_mappings: bool = False) -> DataFrame:
+                    skip_simple_mappings: bool = False,
+                    skip_filling: bool = False) -> DataFrame:
     data = data.copy()
     if not skip_drop:
         try:
@@ -205,6 +221,9 @@ def preprocess_data(data: DataFrame,
         data.salary_gross = data.salary_gross.replace({True: 1, False: 0})
         data.has_test = data.has_test.replace({True: 1, False: 0})
         data.response_letter_required = data.response_letter_required.replace({True: 1, False: 0})
+    if not skip_filling:  # 5
+        data = fill_salary_from(data)
+        data = logo_normalize(data, SALARY_FROM_KEY)
     return data
 
 
