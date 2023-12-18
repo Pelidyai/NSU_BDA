@@ -26,7 +26,6 @@ def _build_bert() -> tf.keras.Model:
     return result_model
 
 
-
 class BertBasedModel(tf.keras.Model):
     def __init__(self, is_work: bool = False):
         super(BertBasedModel, self).__init__(name='')

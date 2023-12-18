@@ -201,7 +201,7 @@ def preprocess_data(data: DataFrame,
     data = data.copy()
     if not skip_drop:
         try:
-            data = data.drop(['area_id', 'published_at', 'created_at','salary_currency'], axis=1)
+            data = data.drop(['area_id', 'published_at', 'created_at', 'salary_currency'], axis=1)
         except Exception:
             pass
     if not skip_text_preprocessing:  # 1
