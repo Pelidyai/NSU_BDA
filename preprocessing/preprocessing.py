@@ -1,4 +1,5 @@
 import math
+import pickle
 from datetime import datetime
 from typing import Iterable
 
@@ -7,7 +8,8 @@ from pandas import DataFrame
 
 from models_creation import load_work_text_model, load_name_desc_model, load_salary_from_model, load_categorical_model
 from support.constants import BERT_BASED_NAME_CHECKPOINT_DIR, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
-    NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES, SALARY_FROM_KEY, CATEGORICAL_KEY
+    NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES, SALARY_FROM_KEY, CATEGORICAL_KEY, MLP_MODEL_PATH, \
+    GRAD_MODEL_PATH, RFR_MODEL_PATH
 from support.functions import prepare_text, split_to_batches
 
 
@@ -243,6 +245,26 @@ def preprocess_date(data: DataFrame, key: str) -> DataFrame:
     return data
 
 
+def preprocess_with_models(data: DataFrame) -> DataFrame:
+    original_data = data
+    data = data.copy()
+    data = data.drop(['id'], axis=1)
+
+    with open(MLP_MODEL_PATH, 'rb') as file:
+        mlp_model = pickle.load(file)
+    with open(GRAD_MODEL_PATH, 'rb') as file:
+        grad_model = pickle.load(file)
+    with open(RFR_MODEL_PATH, 'rb') as file:
+        rfr_model = pickle.load(file)
+    x = np.asarray(data).astype('float32')
+    result = DataFrame()
+    result['id'] = original_data['id']
+    result['mlp'] = mlp_model.predict(x)
+    result['grad'] = grad_model.predict(x)
+    result['rfr'] = rfr_model.predict(x)
+    return result
+
+
 def preprocess_data(data: DataFrame,
                     skip_drop: bool = False,
                     skip_text_preprocessing: bool = False,
@@ -251,7 +273,8 @@ def preprocess_data(data: DataFrame,
                     skip_simple_mappings: bool = False,
                     skip_filling: bool = False,
                     skip_date_preprocess: bool = False,
-                    skip_categorical_predictions: bool = False) -> DataFrame:
+                    skip_categorical_predictions: bool = False,
+                    skip_model_preprocess: bool = False) -> DataFrame:
     data = data.copy()
     if not skip_drop:
         try:
@@ -284,6 +307,8 @@ def preprocess_data(data: DataFrame,
         data = preprocess_date(data, 'created_at')
     if not skip_categorical_predictions:  # 7
         data = add_prediction_by_categorical(data)
+    if not skip_model_preprocess:  # 8
+        data = preprocess_with_models(data)
     return data
 
 

@@ -2,12 +2,14 @@ import os
 import pickle
 
 import numpy as np
+from pandas import DataFrame
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import train_test_split
 
-from support.constants import TARGET_NAME, FINAL_MODELS_DIR, SALARY_FROM_KEY, NAME_DESC_PREDICTION_KEY
-from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_norm_data, get_min_model_error
+from support.constants import TARGET_NAME, ENSEMBLE_MODELS_DIR
+from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_norm_data, get_min_model_error, \
+    load_y_train_data
 
 
 def train(x, y, save_dir, model, n=100, m=5):
@@ -34,13 +36,15 @@ def train(x, y, save_dir, model, n=100, m=5):
 
 def main():
     x_data = load_x_prepared_train_data()
-    y_data = load_y_train_norm_data()[TARGET_NAME]
+    y_data = load_y_train_data()[TARGET_NAME]
 
     x_data = x_data.drop(['id'], axis=1)
     x_data = np.asarray(x_data).astype('float32')
     y_data = np.asarray(y_data).astype('float32')
-    train(x_data, y_data, FINAL_MODELS_DIR, MLPRegressor(hidden_layer_sizes=(32, 32, 8), max_iter=1000,
-                                                         warm_start=True, learning_rate="invscaling"), n=1000)
+    train(x_data, y_data, ENSEMBLE_MODELS_DIR, MLPRegressor(hidden_layer_sizes=(32, 32, 8), max_iter=1000,
+                                                            early_stopping=True, warm_start=True,
+                                                            learning_rate="invscaling", validation_fraction=0.1),
+          n=10000)
     # MLPRegressor(hidden_layer_sizes=(32, 32, 8), max_iter=1000,
     #                                                          warm_start=True, learning_rate="invscaling"), n=1000)
     #  RandomForestRegressor(n_estimators=100) 25.51

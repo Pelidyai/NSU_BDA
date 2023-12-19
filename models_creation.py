@@ -9,7 +9,8 @@ from tensorflow.python.keras import activations
 import tensorflow_text as text
 
 from support.bert import BERT_PREPROCESS_LINK, BERT_ENCODER_LINK
-from support.constants import NAME_DESC_MODELS_DIR, BERT_MODEL_OUT_SIZE, SALARY_FROM_RECOVER_MODELS_DIR, CATEGORICAL_DIR
+from support.constants import NAME_DESC_MODELS_DIR, BERT_MODEL_OUT_SIZE, SALARY_FROM_RECOVER_MODELS_DIR, \
+    CATEGORICAL_DIR, FINAL_MODELS_DIR, ENSEMBLE_MODELS_DIR
 
 tf.get_logger().setLevel('ERROR')
 
@@ -65,4 +66,14 @@ def load_categorical_model() -> Any:
 
 def load_salary_from_model() -> Any:
     with open(SALARY_FROM_RECOVER_MODELS_DIR + "/best.pickaim", 'rb') as file:
+        return pickle.load(file)
+
+
+def load_final_simple_model() -> Any:
+    with open(FINAL_MODELS_DIR + "/best.pickaim", 'rb') as file:
+        return pickle.load(file)
+
+
+def load_ensemble_model() -> Any:
+    with open(ENSEMBLE_MODELS_DIR + "/best.pickaim", 'rb') as file:
         return pickle.load(file)

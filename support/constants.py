@@ -17,10 +17,16 @@ SALARY_FROM_RECOVER_MODELS_DIR: str = get_path(file_dir, 'models/salary_from')
 NAME_DESC_MODELS_DIR: str = get_path(file_dir, 'models/name_desc')
 CATEGORICAL_DIR: str = get_path(file_dir, 'models/categorical')
 FINAL_MODELS_DIR: str = get_path(file_dir, 'models/final')
+ENSEMBLE_MODELS_DIR: str = get_path(file_dir, 'models/ensemble')
 FINAL_MODELS_CHECKPOINT_DIR: str = get_path(file_dir, 'models/final_checkpoints')
 
 BERT_BASED_NAME_CHECKPOINT_DIR: str = get_path(file_dir, 'models/name')
 BERT_BASED_DESCRIPTION_CHECKPOINT_DIR: str = get_path(file_dir, 'models/description')
+
+MLP_MODEL_PATH: str = get_path(file_dir, 'models/32_32_8mlp.pickaim')
+GRAD_MODEL_PATH: str = get_path(file_dir, 'models/grad.pickaim')
+RFR_MODEL_PATH: str = get_path(file_dir, 'models/simple-forest.pickaim')
+
 
 SCALER_PATH: str = get_path(file_dir, 'models/scaler/scaler.pickle')
 
