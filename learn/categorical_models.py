@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
-from support.constants import TARGET_NAME, FINAL_MODELS_DIR, SALARY_FROM_KEY, NAME_DESC_PREDICTION_KEY
+from support.constants import TARGET_NAME, SALARY_FROM_KEY, NAME_DESC_PREDICTION_KEY, CATEGORICAL_DIR
 from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_norm_data, get_min_model_error
 
 
@@ -35,10 +35,10 @@ def main():
     x_data = load_x_prepared_train_data()
     y_data = load_y_train_norm_data()[TARGET_NAME]
 
-    x_data = x_data.drop(['id'], axis=1)
-    x_data = np.asarray(x_data).astype('float32')
+    x_data = x_data.drop(['id', SALARY_FROM_KEY, NAME_DESC_PREDICTION_KEY], axis=1)
+    x_data = np.asarray(x_data).astype('bool')
     y_data = np.asarray(y_data).astype('float32')
-    train(x_data, y_data, FINAL_MODELS_DIR, RandomForestRegressor(n_estimators=100))
+    train(x_data, y_data, CATEGORICAL_DIR, RandomForestRegressor(n_estimators=100))
 
 
 if __name__ == '__main__':

@@ -1,12 +1,13 @@
 import math
+from datetime import datetime
 from typing import Iterable
 
 import numpy as np
 from pandas import DataFrame
 
-from models_creation import load_work_text_model, load_name_desc_model, load_salary_from_model
+from models_creation import load_work_text_model, load_name_desc_model, load_salary_from_model, load_categorical_model
 from support.constants import BERT_BASED_NAME_CHECKPOINT_DIR, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
-    NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES, SALARY_FROM_KEY
+    NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES, SALARY_FROM_KEY, CATEGORICAL_KEY
 from support.functions import prepare_text, split_to_batches
 
 
@@ -176,9 +177,26 @@ def add_prediction_by_name_desc(data: DataFrame) -> DataFrame:
     return data
 
 
+def add_prediction_by_categorical(data: DataFrame) -> DataFrame:
+    original_data = data.copy()
+    data = data.copy()
+    data = data.drop(['id', SALARY_FROM_KEY, NAME_DESC_PREDICTION_KEY], axis=1)
+    x = np.asarray(data).astype('bool')
+    model = load_categorical_model()
+    y = np.asarray(model.predict(x)).astype('float32')
+
+    result = DataFrame()
+    result['id'] = original_data['id']
+    result[SALARY_FROM_KEY] = original_data[SALARY_FROM_KEY]
+    result[NAME_DESC_PREDICTION_KEY] = original_data[NAME_DESC_PREDICTION_KEY]
+    result[CATEGORICAL_KEY] = y
+    return result
+
+
 def fill_salary_from(data: DataFrame) -> DataFrame:
     x_data = data.copy()
     x_data_index = x_data[SALARY_FROM_KEY].isna()
+    x_data = x_data.drop(['created_at', 'published_at'], axis=1)
     x = x_data[x_data_index]
 
     x = x.drop([SALARY_FROM_KEY, 'id'], axis=1)
@@ -191,17 +209,53 @@ def fill_salary_from(data: DataFrame) -> DataFrame:
     return data
 
 
+def is_over_or_2021(year: str) -> int:
+    if int(year) >= 2021:
+        return 1
+    return 0
+
+
+def to_one_got_month(month_number: str) -> list[int]:
+    number: int = int(month_number)
+    out = [0 for _ in range(12)]
+    out[number - 1] = 1
+    return out
+
+
+def preprocess_months(data: DataFrame, key: str) -> DataFrame:
+    months = np.asarray(data[key]).astype('str')
+    one_hot = list(map(lambda x: to_one_got_month(x), months))
+    for i in range(len(one_hot[0])):
+        data[f'{key}_{i}'] = cut(one_hot, i)
+    data = data.drop([key], axis=1)
+    return data
+
+
+def preprocess_date(data: DataFrame, key: str) -> DataFrame:
+    keyframe = data[key]
+    date_array = np.asarray(keyframe.apply(get_first)).astype('str')
+    date_array = list(map(lambda x: x.split('-'), date_array))
+    data[f'{key}_year'] = cut(date_array, 0)
+    data[f'{key}_month'] = cut(date_array, 1)
+    data = preprocess_months(data, f'{key}_month')
+    data[f'{key}_year'] = data[f'{key}_year'].apply(is_over_or_2021)
+    data = data.drop([key], axis=1)
+    return data
+
+
 def preprocess_data(data: DataFrame,
                     skip_drop: bool = False,
                     skip_text_preprocessing: bool = False,
                     skip_models_text_preprocessing: bool = False,
                     skip_name_desc_prediction: bool = False,
                     skip_simple_mappings: bool = False,
-                    skip_filling: bool = False) -> DataFrame:
+                    skip_filling: bool = False,
+                    skip_date_preprocess: bool = False,
+                    skip_categorical_predictions: bool = False) -> DataFrame:
     data = data.copy()
     if not skip_drop:
         try:
-            data = data.drop(['area_id', 'published_at', 'created_at', 'salary_currency'], axis=1)
+            data = data.drop(['area_id', 'salary_currency'], axis=1)
         except Exception:
             pass
     if not skip_text_preprocessing:  # 1
@@ -221,9 +275,15 @@ def preprocess_data(data: DataFrame,
         data.salary_gross = data.salary_gross.replace({True: 1, False: 0})
         data.has_test = data.has_test.replace({True: 1, False: 0})
         data.response_letter_required = data.response_letter_required.replace({True: 1, False: 0})
+    data.to_csv('save.csv')
     if not skip_filling:  # 5
         data = fill_salary_from(data)
         data = logo_normalize(data, SALARY_FROM_KEY)
+    if not skip_date_preprocess:  # 6
+        data = preprocess_date(data, 'published_at')
+        data = preprocess_date(data, 'created_at')
+    if not skip_categorical_predictions:  # 7
+        data = add_prediction_by_categorical(data)
     return data
 
 

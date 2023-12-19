@@ -15,6 +15,7 @@ def get_path(dir_to_search: str, file_to_search: str):
 
 SALARY_FROM_RECOVER_MODELS_DIR: str = get_path(file_dir, 'models/salary_from')
 NAME_DESC_MODELS_DIR: str = get_path(file_dir, 'models/name_desc')
+CATEGORICAL_DIR: str = get_path(file_dir, 'models/categorical')
 FINAL_MODELS_DIR: str = get_path(file_dir, 'models/final')
 FINAL_MODELS_CHECKPOINT_DIR: str = get_path(file_dir, 'models/final_checkpoints')
 
@@ -43,5 +44,6 @@ TRAIN_FEATURE = ['name', 'has_test', 'response_letter_required', 'salary_from', 
 TARGET_NAME = 'salary_to'
 
 NAME_DESC_PREDICTION_KEY = 'salary_to_by_name_desc'
+CATEGORICAL_KEY = 'salary_to_by_categorical'
 SALARY_FROM_KEY = 'salary_from'
 
