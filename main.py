@@ -5,8 +5,8 @@ from support.functions import load_x_prepared_train_data
 def main_x():
     data = load_x_prepared_train_data()
     data = preprocess_data(data, skip_drop=True, skip_text_preprocessing=True,
-                           skip_models_text_preprocessing=True, skip_name_desc_prediction=False,
-                           skip_simple_mappings=True, skip_filling=True, skip_date_preprocess=True,
+                           skip_models_text_preprocessing=True, skip_name_desc_prediction=True,
+                           skip_simple_mappings=True, skip_filling=True, skip_date_preprocess=False,
                            skip_categorical_predictions=True, skip_model_preprocess=True)
     data.to_csv('data/buf.csv', index=False)
 

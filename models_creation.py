@@ -1,15 +1,12 @@
 import pickle
 from typing import Any
 
-import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
 import torch
 from sklearn.neural_network import MLPRegressor
 from tensorflow.python.keras import activations
 from transformers import AutoTokenizer, AutoModel
-
-import tensorflow_text as text
 
 from learn.categorical_models2 import CategoricalModel
 from learn.evaluate_model2 import EvaluateModel
@@ -87,28 +84,28 @@ def load_work_text_model(checkpoint_dir: str) -> BertBasedModel:
     return loaded_model
 
 
-def load_name_desc_nn_model(checkpoint_dir: str) -> BertBasedModel:
+def load_name_desc_nn_model(checkpoint_dir: str) -> NameDescModel:
     loaded_model = NameDescModel(is_work=True)
     latest = tf.train.latest_checkpoint(checkpoint_dir)
     loaded_model.load_weights(latest)
     return loaded_model
 
 
-def load_categorical_nn_model(checkpoint_dir: str) -> BertBasedModel:
+def load_categorical_nn_model(checkpoint_dir: str) -> CategoricalModel:
     loaded_model = CategoricalModel(is_work=True)
     latest = tf.train.latest_checkpoint(checkpoint_dir)
     loaded_model.load_weights(latest)
     return loaded_model
 
 
-def load_eval_nn_model(checkpoint_dir: str) -> BertBasedModel:
+def load_eval_nn_model(checkpoint_dir: str) -> EvaluateModel:
     loaded_model = EvaluateModel(is_work=True)
     latest = tf.train.latest_checkpoint(checkpoint_dir)
     loaded_model.load_weights(latest)
     return loaded_model
 
 
-def load_final_model(checkpoint_dir: str) -> BertBasedModel:
+def load_final_model(checkpoint_dir: str) -> FinalModel:
     loaded_model = FinalModel(is_work=True)
     latest = tf.train.latest_checkpoint(checkpoint_dir)
     loaded_model.load_weights(latest)

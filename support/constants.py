@@ -14,6 +14,7 @@ def get_path(dir_to_search: str, file_to_search: str):
 
 
 SALARY_FROM_RECOVER_MODELS_DIR: str = get_path(file_dir, 'models/salary_from')
+EVAL_SALARY_FROM_RECOVER_MODELS_DIR: str = get_path(file_dir, 'models/salary_from_eval')
 NAME_DESC_MODELS_DIR: str = get_path(file_dir, 'models/name_desc')
 RU_NAME_DESC_MODELS_DIR: str = get_path(file_dir, 'models/ru_name_desc')
 CATEGORICAL_DIR: str = get_path(file_dir, 'models/categorical')
