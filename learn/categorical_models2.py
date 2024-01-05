@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.python.keras import activations
 
 from support.constants import TARGET_NAME, CATEGORICAL_FEATURES, CATEGORICAL_DIR
-from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_data
+from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_norm_data
 
 
 class CategoricalModel(tf.keras.Model):
@@ -45,7 +45,7 @@ def create_and_learn_categorical_models(x, y,
 
 def main():
     x_data = load_x_prepared_train_data()
-    y_data = load_y_train_data()[TARGET_NAME]
+    y_data = load_y_train_norm_data()[TARGET_NAME]
 
     x_data = x_data[CATEGORICAL_FEATURES]
     x_data = np.asarray(x_data).astype('bool')

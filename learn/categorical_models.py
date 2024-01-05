@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 from support.constants import TARGET_NAME, CATEGORICAL_DIR, \
     CATEGORICAL_FEATURES
 from support.functions import load_x_prepared_train_data, smape_loss, get_min_model_error, \
-    load_y_train_data
+    load_y_train_norm_data
 
 
 def train(x, y, save_dir, model, n=100, m=5):
@@ -35,7 +35,7 @@ def train(x, y, save_dir, model, n=100, m=5):
 
 def main():
     x_data = load_x_prepared_train_data()
-    y_data = load_y_train_data()[TARGET_NAME]
+    y_data = load_y_train_norm_data()[TARGET_NAME]
 
     x_data = x_data[CATEGORICAL_FEATURES]
     x_data = np.asarray(x_data).astype('bool')
