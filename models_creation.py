@@ -14,7 +14,7 @@ from learn.final_model_2 import FinalModel
 from learn.name_description_models2 import NameDescModel
 from support.bert import BERT_PREPROCESS_LINK, BERT_ENCODER_LINK
 from support.constants import NAME_DESC_MODELS_DIR, BERT_MODEL_OUT_SIZE, SALARY_FROM_RECOVER_MODELS_DIR, \
-    CATEGORICAL_DIR, FINAL_MODELS_DIR, ENSEMBLE_MODELS_DIR, RU_BERT_DIR, EVAL_MODELS_DIR
+    CATEGORICAL_DIR, FINAL_MODELS_DIR, ENSEMBLE_MODELS_DIR, RU_BERT_DIR, EVAL_MODELS_DIR, RU_NAME_DESC_MODELS_DIR
 
 tf.get_logger().setLevel('ERROR')
 
@@ -122,7 +122,7 @@ def load_eval_model() -> Any:
 
 
 def load_name_desc_model() -> Any:
-    with open(NAME_DESC_MODELS_DIR + "/best.pickaim", 'rb') as file:
+    with open(RU_NAME_DESC_MODELS_DIR + "/best.pickaim", 'rb') as file:
         return pickle.load(file)
 
 
