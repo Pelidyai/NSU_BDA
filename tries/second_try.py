@@ -20,19 +20,19 @@ def preprocess_x_test():
                            skip_date_preprocess=True,
                            skip_categorical_predictions=True,
                            skip_model_preprocess=True)
-    data.to_csv('prep_x_test222.csv', index=False)
+    data.to_csv('prep_x_test2222.csv', index=False)
 
 
 def main():
-    data = pd.read_csv('prep_x_test222.csv')
+    data = pd.read_csv('prep_x_test2222.csv')
     x = np.asarray(data[NAMES_AND_DESC_FEATURES]).astype('float32')
     model = load_name_desc_model()
     y = np.asarray(model.predict(x)).astype('float32')
 
     result = DataFrame()
     result['id'] = data['id']
-    result[TARGET_NAME] = inverse(y)
-    result.to_csv('result22.csv', index=False)
+    result[TARGET_NAME] = y
+    result.to_csv('result_name_desc_non_norm.csv', index=False)
 
 
 if __name__ == '__main__':
