@@ -29,6 +29,7 @@ def create_and_learn_text_model(data: DataFrame,
     cp_callback = tf.keras.callbacks.ModelCheckpoint(
         filepath=checkpoint_filepath,
         verbose=1,
+        save_best_only=True,
         save_weights_only=True)
     model.fit(x_train, y_train, verbose=1, validation_data=(x_test, y_test),
               batch_size=128, epochs=10, shuffle=True, callbacks=[cp_callback])

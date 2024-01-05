@@ -17,9 +17,9 @@ tf.get_logger().setLevel('ERROR')
 
 def _build_bert() -> tf.keras.Model:
     text_input = tf.keras.layers.Input(shape=(), dtype=tf.string, name='text')
-    preprocessing_layer = hub.KerasLayer(BERT_PREPROCESS_LINK, name='preprocessing')
+    preprocessing_layer = hub.KerasLayer(BERT_PREPROCESS_LINK, name='preprocessing', trainable=False)
     encoder_inputs = preprocessing_layer(text_input)
-    encoder = hub.KerasLayer(BERT_ENCODER_LINK, trainable=True, name='BERT_encoder')
+    encoder = hub.KerasLayer(BERT_ENCODER_LINK, trainable=False, name='BERT_encoder')
     outputs = encoder(encoder_inputs)
     net = outputs['pooled_output']
     result_model = tf.keras.Model(text_input, net)
@@ -32,6 +32,7 @@ class BertBasedModel(tf.keras.Model):
         super(BertBasedModel, self).__init__(name='')
         self.is_work = is_work
         self.bert = _build_bert()
+        self.bert.trainable = False
         self.first = tf.keras.layers.Dense(BERT_MODEL_OUT_SIZE, activation=activations.softplus)
         self.forth = tf.keras.layers.Dense(1, activation=activations.leaky_relu)
 

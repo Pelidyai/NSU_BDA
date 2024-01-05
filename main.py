@@ -1,3 +1,4 @@
+import math
 from datetime import datetime
 
 import numpy as np
@@ -12,10 +13,10 @@ from support.functions import load_x_train_data, load_x_prepared_train_data, loa
 def main_x():
     data = load_x_prepared_train_data()
     data = preprocess_data(data, skip_drop=True, skip_text_preprocessing=True,
-                           skip_models_text_preprocessing=True, skip_name_desc_prediction=True,
-                           skip_simple_mappings=True, skip_filling=True, skip_date_preprocess=True,
-                           skip_categorical_predictions=True, skip_model_preprocess=False)
-    data.to_csv(PREP_X_TRAIN_PATH, index=False)
+                           skip_models_text_preprocessing=False, skip_name_desc_prediction=False,
+                           skip_simple_mappings=False, skip_filling=False, skip_date_preprocess=False,
+                           skip_categorical_predictions=False, skip_model_preprocess=False)
+    data.to_csv('data/buf.csv', index=False)
 
 
 def main_y():
@@ -37,3 +38,9 @@ if __name__ == '__main__':
     # # x_data = load_x_train_data()
     # # x_prep['employer_name'] = preprocess_employer_name(x_data)['employer_name']
     # x_prep.to_csv(file, index=False)
+
+    # x_data = load_x_prepared_train_data()
+    # description = x_data['description']
+    # lengths = description.apply(lambda x: len(x))
+    # x_data['desc_length'] = lengths.apply(lambda x: math.log(x))
+    # x_data.to_csv('data/prep_X_train_1_1.csv', index=False)

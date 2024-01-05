@@ -40,7 +40,7 @@ Y_TRAIN_PATH: str = get_path(file_dir, "data/Y_train.csv")
 Y_TRAIN_NORM_PATH: str = get_path(file_dir, "data/Y_train_norm.csv")
 
 
-BERT_MODEL_OUT_SIZE = 32
+BERT_MODEL_OUT_SIZE = 8
 
 NAMES_AND_DESC_FEATURES = [*[f"name_{i}" for i in range(BERT_MODEL_OUT_SIZE)],
                            *[f"description_{i}" for i in range(BERT_MODEL_OUT_SIZE)]]
