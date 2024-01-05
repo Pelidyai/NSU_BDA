@@ -328,7 +328,6 @@ def preprocess_data(data: DataFrame,
         data = preprocess_text_with_rubert(data, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, 'description')
     if not skip_name_desc_prediction:  # 3
         data = add_prediction_by_name_desc(data)
-        data = add_nn_prediction_by_name_desc(data)
     if not skip_simple_mappings:  # 4
         data = preprocess_salary_gross(data)
         data = preprocess_employer_name_to_int(data)
@@ -339,10 +338,12 @@ def preprocess_data(data: DataFrame,
     data.to_csv('save.csv')
     if not skip_filling:  # 5
         data = fill_salary_from(data)
+        data = logo_normalize(data, SALARY_FROM_KEY)
     if not skip_date_preprocess:  # 6
         data = preprocess_date(data, 'published_at')
         data = preprocess_date(data, 'created_at')
     if not skip_categorical_predictions:  # 7
+        data = add_nn_prediction_by_name_desc(data)
         data = add_prediction_by_categorical(data)
         data = add_nn_prediction_by_categorical(data)
     if not skip_second_drop:
@@ -357,6 +358,12 @@ def preprocess_data(data: DataFrame,
         data = preprocess_with_models(data)
 
     return data
+
+
+def logo_normalize(data: DataFrame, target: str) -> DataFrame:
+    normalized = data.copy()
+    normalized[target] = normalized[target].apply(math.log)
+    return normalized
 
 
 def inverse(y_to_inverse: Iterable) -> Iterable:

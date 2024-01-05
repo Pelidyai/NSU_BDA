@@ -1,12 +1,13 @@
 import os
 
 import numpy as np
-import tensorflow as tf
 from sklearn.model_selection import train_test_split
-from tensorflow.python.keras import activations
 
-from support.constants import TARGET_NAME, NAMES_AND_DESC_FEATURES, RU_NAME_DESC_MODELS_DIR
-from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_data
+from support.constants import TARGET_NAME, NAME_DESC_MODELS_DIR, NAMES_AND_DESC_FEATURES, RU_NAME_DESC_MODELS_DIR
+from support.functions import load_x_prepared_train_data, load_y_train_norm_data, smape_loss
+
+import tensorflow as tf
+from tensorflow.python.keras import activations
 
 
 class NameDescModel(tf.keras.Model):
@@ -45,7 +46,7 @@ def create_and_learn_name_desc_models(x, y,
 
 def main():
     x_data = load_x_prepared_train_data()
-    y_data = load_y_train_data()
+    y_data = load_y_train_norm_data()
 
     x_data = np.asarray(x_data[NAMES_AND_DESC_FEATURES]).astype('float32')
     y_data = np.asarray(y_data[TARGET_NAME]).astype('float32')
