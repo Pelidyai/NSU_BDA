@@ -39,9 +39,9 @@ def main():
 
     x_data = np.asarray(x_data[NAMES_AND_DESC_FEATURES]).astype('float32')
     y_data = np.asarray(y_data[TARGET_NAME]).astype('float32')
-    # train(x_data, y_data, NAME_DESC_MODELS_DIR, RandomForestRegressor(n_estimators=100, max_features=5))
+    train(x_data, y_data, NAME_DESC_MODELS_DIR, RandomForestRegressor(n_estimators=100, max_features=5))
     # train(x_data, y_data, NAME_DESC_MODELS_DIR, GradientBoostingRegressor(verbose=1))
-    train(x_data, y_data, NAME_DESC_MODELS_DIR, MLPRegressor(hidden_layer_sizes=(64, 32, 8), activation='identity'))
+    # train(x_data, y_data, NAME_DESC_MODELS_DIR, MLPRegressor(hidden_layer_sizes=(64, 32, 8), activation='identity'))
 
 
 def main_test():

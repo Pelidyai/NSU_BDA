@@ -9,13 +9,22 @@ from support.functions import load_x_test_data
 
 
 def preprocess_x_test():
-    data = load_x_test_data()
-    data = preprocess_data(data)
-    data.to_csv('prep_x_test2.csv')
+    data = pd.read_csv('prep_x_test1.csv')
+    data = preprocess_data(data,
+                           skip_drop=True,
+                           skip_text_preprocessing=True,
+                           skip_models_text_preprocessing=False,
+                           skip_name_desc_prediction=True,
+                           skip_simple_mappings=True,
+                           skip_filling=True,
+                           skip_date_preprocess=True,
+                           skip_categorical_predictions=True,
+                           skip_model_preprocess=True)
+    data.to_csv('prep_x_test222.csv', index=False)
 
 
 def main():
-    data = pd.read_csv('prep_x_test2.csv')
+    data = pd.read_csv('prep_x_test222.csv')
     x = np.asarray(data[NAMES_AND_DESC_FEATURES]).astype('float32')
     model = load_name_desc_model()
     y = np.asarray(model.predict(x)).astype('float32')
@@ -23,7 +32,7 @@ def main():
     result = DataFrame()
     result['id'] = data['id']
     result[TARGET_NAME] = inverse(y)
-    result.to_csv('result2.csv', index=False)
+    result.to_csv('result22.csv', index=False)
 
 
 if __name__ == '__main__':

@@ -1,16 +1,19 @@
 import pickle
 from typing import Any
 
+import numpy as np
 import tensorflow as tf
 import tensorflow_hub as hub
+import torch
 from sklearn.neural_network import MLPRegressor
 from tensorflow.python.keras import activations
+from transformers import AutoTokenizer, AutoModel
 
 import tensorflow_text as text
 
 from support.bert import BERT_PREPROCESS_LINK, BERT_ENCODER_LINK
 from support.constants import NAME_DESC_MODELS_DIR, BERT_MODEL_OUT_SIZE, SALARY_FROM_RECOVER_MODELS_DIR, \
-    CATEGORICAL_DIR, FINAL_MODELS_DIR, ENSEMBLE_MODELS_DIR
+    CATEGORICAL_DIR, FINAL_MODELS_DIR, ENSEMBLE_MODELS_DIR, RU_BERT_DIR
 
 tf.get_logger().setLevel('ERROR')
 
@@ -22,6 +25,21 @@ def _build_bert() -> tf.keras.Model:
     encoder = hub.KerasLayer(BERT_ENCODER_LINK, trainable=False, name='BERT_encoder')
     outputs = encoder(encoder_inputs)
     net = outputs['pooled_output']
+    result_model = tf.keras.Model(text_input, net)
+    result_model.trainable = False
+    return result_model
+
+
+def _build_rubert():
+    text_input = tf.keras.layers.Input(shape=(), dtype=tf.string, name='text')
+    # text_input = np.asarray(text_input).astype('str')
+    tokenizer = AutoTokenizer.from_pretrained(RU_BERT_DIR)
+    t = tokenizer(text_input, padding=True, truncation=True, return_tensors='pt')
+    ru_bert = AutoModel.from_pretrained(RU_BERT_DIR)
+    with torch.no_grad():
+        model_output = ru_bert(**{k: v.to(ru_bert.device) for k, v in t.items()})
+    embeddings = model_output.last_hidden_state[:, 0, :]
+    net = torch.nn.functional.normalize(embeddings)
     result_model = tf.keras.Model(text_input, net)
     result_model.trainable = False
     return result_model
@@ -42,6 +60,20 @@ class BertBasedModel(tf.keras.Model):
         if not self.is_work:
             x = self.forth(x)
         return x
+
+
+class RuBert:
+    def __init__(self):
+        self.tokenizer = AutoTokenizer.from_pretrained(RU_BERT_DIR)
+        self.ru_bert = AutoModel.from_pretrained(RU_BERT_DIR)
+
+    def embed(self, text_inputs):
+        t = self.tokenizer(text_inputs, padding=True, truncation=True, return_tensors='pt')
+        with torch.no_grad():
+            model_output = self.ru_bert(**{k: v.to(self.ru_bert.device) for k, v in t.items()})
+        embeddings = model_output.last_hidden_state[:, 0, :]
+        embeddings = torch.nn.functional.normalize(embeddings)
+        return embeddings
 
 
 def load_work_text_model(checkpoint_dir: str) -> BertBasedModel:
@@ -78,3 +110,9 @@ def load_final_simple_model() -> Any:
 def load_ensemble_model() -> Any:
     with open(ENSEMBLE_MODELS_DIR + "/best.pickaim", 'rb') as file:
         return pickle.load(file)
+
+
+if __name__ == '__main__':
+    model = RuBert()
+    result = model.embed(['Привет мир'])
+    print(result)

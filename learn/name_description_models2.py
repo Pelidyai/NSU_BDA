@@ -1,10 +1,9 @@
 import os
 
 import numpy as np
-from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 
-from support.constants import TARGET_NAME, NAME_DESC_MODELS_DIR, NAMES_AND_DESC_FEATURES
+from support.constants import TARGET_NAME, NAME_DESC_MODELS_DIR, NAMES_AND_DESC_FEATURES, RU_NAME_DESC_MODELS_DIR
 from support.functions import load_x_prepared_train_data, load_y_train_norm_data, smape_loss
 
 import tensorflow as tf
@@ -41,7 +40,7 @@ def create_and_learn_name_desc_models(x, y,
         save_best_only=True,
         save_weights_only=True)
     model.fit(x_train, y_train, verbose=1, validation_data=(x_test, y_test),
-              batch_size=128, epochs=100, shuffle=True, callbacks=[cp_callback])
+              batch_size=128, epochs=500, shuffle=True, callbacks=[cp_callback])
     return model
 
 
@@ -52,7 +51,7 @@ def main():
     x_data = np.asarray(x_data[NAMES_AND_DESC_FEATURES]).astype('float32')
     y_data = np.asarray(y_data[TARGET_NAME]).astype('float32')
     create_and_learn_name_desc_models(x_data, y_data,
-                                      "name_desc_norm", NAME_DESC_MODELS_DIR)
+                                      "name_desc_norm", RU_NAME_DESC_MODELS_DIR)
 
 
 if __name__ == '__main__':

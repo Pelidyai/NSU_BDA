@@ -80,6 +80,10 @@ def __divide_chunks(any_list: list[Any], chunk_size: int):
 def get_min_model_error(models_dir):
     min_error = 10000
     for file in os.listdir(models_dir):
+        try:
+            file.index('.pickaim')
+        except ValueError:
+            continue
         file = file.replace('best', '')
         file = file.replace('.pickaim', '')
         error = min_error

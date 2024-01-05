@@ -6,10 +6,12 @@ from typing import Iterable
 import numpy as np
 from pandas import DataFrame
 
-from models_creation import load_work_text_model, load_name_desc_model, load_salary_from_model, load_categorical_model
+from learn.rubert_emb_based import load_work_rubert_text_model
+from models_creation import load_work_text_model, load_name_desc_model, load_salary_from_model, load_categorical_model, \
+    RuBert
 from support.constants import BERT_BASED_NAME_CHECKPOINT_DIR, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
     NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES, SALARY_FROM_KEY, CATEGORICAL_KEY, MLP_MODEL_PATH, \
-    GRAD_MODEL_PATH, RFR_MODEL_PATH
+    GRAD_MODEL_PATH, RFR_MODEL_PATH, RU_BERT_BASED_NAME_CHECKPOINT_DIR, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR
 from support.functions import prepare_text, split_to_batches
 
 
@@ -48,6 +50,21 @@ def preprocess_text_with_model(data: DataFrame, checkpoint_dir: str, x_key: str)
     batch_size = 128
     print(f'Start model preprocess text key - {x_key}')
     output = model_work(loaded_model, input_texts, batch_size)
+    data = data.drop([x_key], axis=1)
+    for i in range(len(output[0])):
+        data[f'{x_key}_{i}'] = cut(output, i)
+    print(f'End model preprocess text key - {x_key}')
+    return data
+
+
+def preprocess_text_with_rubert(data: DataFrame, checkpoint_dir: str, x_key: str) -> DataFrame:
+    model = RuBert()
+    rubert_encode_model = load_work_rubert_text_model(checkpoint_dir)
+    input_texts = np.asarray(data[x_key]).astype('str').tolist()
+    batch_size = 128
+    output = model_work(model.embed, input_texts, batch_size)
+    output = np.asarray(output).astype('float64')
+    output = model_work(rubert_encode_model, output, batch_size)
     data = data.drop([x_key], axis=1)
     for i in range(len(output[0])):
         data[f'{x_key}_{i}'] = cut(output, i)
@@ -292,8 +309,8 @@ def preprocess_data(data: DataFrame,
         data = preprocess_area_name(data)
         data = preprocess_employer_name(data)
     if not skip_models_text_preprocessing:  # 2
-        data = preprocess_text_with_model(data, BERT_BASED_NAME_CHECKPOINT_DIR, 'name')
-        data = preprocess_text_with_model(data, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, 'description')
+        data = preprocess_text_with_rubert(data, RU_BERT_BASED_NAME_CHECKPOINT_DIR, 'name')
+        data = preprocess_text_with_rubert(data, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, 'description')
     # if not skip_name_desc_prediction:  # 3
     #     data = add_prediction_by_name_desc(data)
     # data.to_csv('save.csv')
