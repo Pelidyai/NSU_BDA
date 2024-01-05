@@ -5,11 +5,8 @@ import numpy as np
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
-from preprocessing.preprocessing import inverse, logo_normalize
-from support.constants import NAME_DESC_MODELS_DIR, TARGET_NAME, NAMES_AND_DESC_FEATURES, \
-    SALARY_FROM_RECOVER_MODELS_DIR, SALARY_FROM_KEY
-from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_norm_data, load_y_train_data, \
-    get_min_model_error
+from support.constants import SALARY_FROM_RECOVER_MODELS_DIR, SALARY_FROM_KEY
+from support.functions import load_x_prepared_train_data, smape_loss, get_min_model_error, logo_normalize
 
 
 def train(x, y, save_dir, model, n=100):

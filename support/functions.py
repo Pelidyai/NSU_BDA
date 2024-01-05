@@ -1,3 +1,4 @@
+import math
 import os
 import re
 from typing import Any
@@ -92,3 +93,9 @@ def get_min_model_error(models_dir):
         if error < min_error:
             min_error = error
     return min_error
+
+
+def logo_normalize(data: DataFrame, target: str) -> DataFrame:
+    normalized = data.copy()
+    normalized[target] = normalized[target].apply(math.log)
+    return normalized

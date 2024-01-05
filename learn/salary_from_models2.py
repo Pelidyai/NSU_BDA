@@ -8,7 +8,7 @@ from tensorflow.python.keras import activations
 
 from models_creation import load_salary_from_model
 from support.constants import SALARY_FROM_KEY, SALARY_FROM_RECOVER_MODELS_DIR, EVAL_SALARY_FROM_RECOVER_MODELS_DIR
-from support.functions import load_x_prepared_train_data, smape_loss
+from support.functions import load_x_prepared_train_data, smape_loss, logo_normalize
 
 
 class SalaryFromModel(tf.keras.Model):
@@ -55,7 +55,7 @@ def load_salary_from_nn_model(checkpoint_dir: str) -> SalaryFromModel:
 def main():
     x_data = load_x_prepared_train_data()
     x_data = x_data[x_data[SALARY_FROM_KEY].notna()]
-    y_data = x_data[SALARY_FROM_KEY]
+    y_data = logo_normalize(x_data, SALARY_FROM_KEY)[SALARY_FROM_KEY]
 
     x_data = x_data.drop([SALARY_FROM_KEY, 'id', 'created_at', 'published_at'], axis=1)
     x_data = np.asarray(x_data).astype('float32')
@@ -75,7 +75,7 @@ def create_data_to_eval_salary_from(x_data):
 def main_eval():
     x_data = load_x_prepared_train_data()
     x_data = x_data[x_data[SALARY_FROM_KEY].notna()]
-    y_data = x_data[SALARY_FROM_KEY]
+    y_data = logo_normalize(x_data, SALARY_FROM_KEY)[SALARY_FROM_KEY]
 
     x_data = x_data.drop([SALARY_FROM_KEY, 'id', 'created_at', 'published_at'], axis=1)
     x_data = np.asarray(x_data).astype('float32')
@@ -87,4 +87,4 @@ def main_eval():
 
 
 if __name__ == '__main__':
-    main_eval()
+    main()

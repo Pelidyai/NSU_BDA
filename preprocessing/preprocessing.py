@@ -1,20 +1,17 @@
 import math
-import pickle
-from datetime import datetime
 from typing import Iterable
 
 import numpy as np
 from pandas import DataFrame
 
 from learn.rubert_emb_based import load_work_rubert_text_model
-from learn.salary_from_models2 import create_data_to_eval_salary_from, load_salary_from_nn_model
-from models_creation import load_work_text_model, load_name_desc_model, load_salary_from_model, load_categorical_model, \
-    RuBert, load_name_desc_nn_model, load_categorical_nn_model, load_eval_nn_model, load_eval_model
-from support.constants import BERT_BASED_NAME_CHECKPOINT_DIR, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
-    NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES, SALARY_FROM_KEY, CATEGORICAL_KEY, MLP_MODEL_PATH, \
-    GRAD_MODEL_PATH, RFR_MODEL_PATH, RU_BERT_BASED_NAME_CHECKPOINT_DIR, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
-    RU_NAME_DESC_MODELS_DIR, CATEGORICAL_FEATURES, CATEGORICAL_DIR, EVAL_MODELS_DIR, EVAL_SALARY_FROM_RECOVER_MODELS_DIR
-from support.functions import prepare_text, split_to_batches
+from models_creation import load_work_text_model, load_name_desc_model, load_categorical_model, \
+    RuBert, load_name_desc_nn_model, load_categorical_nn_model, load_eval_nn_model, load_eval_model, \
+    load_salary_from_model
+from support.constants import NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES, SALARY_FROM_KEY, CATEGORICAL_KEY, \
+    RU_BERT_BASED_NAME_CHECKPOINT_DIR, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
+    RU_NAME_DESC_MODELS_DIR, CATEGORICAL_FEATURES, CATEGORICAL_DIR, EVAL_MODELS_DIR
+from support.functions import prepare_text, split_to_batches, logo_normalize
 
 
 def preprocess_text(data: DataFrame, key: str) -> DataFrame:
@@ -234,12 +231,10 @@ def fill_salary_from(data: DataFrame) -> DataFrame:
 
     x = x.drop([SALARY_FROM_KEY, 'id'], axis=1)
     x = np.asarray(x).astype('float32')
-    x = create_data_to_eval_salary_from(x)
-    x = np.asarray(x).astype('float32')
-    model = load_salary_from_nn_model(EVAL_SALARY_FROM_RECOVER_MODELS_DIR)
+    model = load_salary_from_model()
     y = np.asarray(model.predict(x)).astype('float32')
     copy = data[x_data_index].copy()
-    copy[SALARY_FROM_KEY] = y
+    copy[SALARY_FROM_KEY] = inverse(y)
     data[x_data_index] = copy
     return data
 
@@ -358,12 +353,6 @@ def preprocess_data(data: DataFrame,
         data = preprocess_with_models(data)
 
     return data
-
-
-def logo_normalize(data: DataFrame, target: str) -> DataFrame:
-    normalized = data.copy()
-    normalized[target] = normalized[target].apply(math.log)
-    return normalized
 
 
 def inverse(y_to_inverse: Iterable) -> Iterable:
