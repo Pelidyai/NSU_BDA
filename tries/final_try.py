@@ -9,21 +9,25 @@ from support.functions import load_x_test_data
 
 
 def preprocess_x_test():
-    data = pd.read_csv('prep_x_test222.csv')
+    data = pd.read_csv('prep_x_test2222.csv')
+    try:
+        data = data.drop('Unnamed: 0', axis=1)
+    except Exception:
+        pass
     data = preprocess_data(data, skip_drop=True, skip_text_preprocessing=True, skip_models_text_preprocessing=True)
-    data.to_csv('prep_x_test_final.csv', index=False)
+    data.to_csv('prep_x_test_final_non_norm2.csv', index=False)
 
 
 def main():
-    data = pd.read_csv('prep_x_test_final.csv')
+    data = pd.read_csv('prep_x_test_final_non_norm2.csv')
     x = np.asarray(data[['eval', 'nn_eval']]).astype('float32')
     model = load_final_model(FINAL_MODELS_DIR)
     y = np.asarray(model.predict(x)).astype('float32')
 
     result = DataFrame()
     result['id'] = data['id']
-    result[TARGET_NAME] = inverse(y)
-    result.to_csv('result_final.csv', index=False)
+    result[TARGET_NAME] = y
+    result.to_csv('result_final_non_norm2.csv', index=False)
 
 
 if __name__ == '__main__':

@@ -7,7 +7,7 @@ def main_x():
     data = preprocess_data(data, skip_drop=True, skip_text_preprocessing=True,
                            skip_models_text_preprocessing=True, skip_name_desc_prediction=True,
                            skip_simple_mappings=True, skip_filling=True, skip_date_preprocess=True,
-                           skip_categorical_predictions=True, skip_model_preprocess=False)
+                           skip_categorical_predictions=True, skip_second_drop=True, skip_model_preprocess=False)
     data.to_csv('data/buf.csv', index=False)
 
 

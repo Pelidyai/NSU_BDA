@@ -2,11 +2,12 @@ import os
 
 import numpy as np
 import tensorflow as tf
+from pandas import DataFrame
 from sklearn.model_selection import train_test_split
 from tensorflow.python.keras import activations
 
 from support.constants import TARGET_NAME, EVAL_MODELS_DIR
-from support.functions import load_x_prepared_train_data, load_y_train_norm_data, smape_loss
+from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_data
 
 
 class EvaluateModel(tf.keras.Model):
@@ -45,7 +46,7 @@ def create_and_learn_evaluate_models(x, y,
 
 def main():
     x_data = load_x_prepared_train_data()
-    y_data = load_y_train_norm_data()[TARGET_NAME]
+    y_data = load_y_train_data()[TARGET_NAME]
     x_data = x_data.drop(['id'], axis=1)
 
     x_data = np.asarray(x_data).astype('float32')
@@ -55,3 +56,14 @@ def main():
 
 if __name__ == '__main__':
     main()
+    # x_data = load_x_prepared_train_data()
+    # y_data = load_y_train_data()[TARGET_NAME]
+    # x_data = x_data.drop(['id'], axis=1)
+    # correlations = x_data.corrwith(y_data)
+    # correlations = correlations.apply(lambda x: abs(x))
+    # frame = DataFrame()
+    # frame['key'] = correlations.index
+    # frame['values'] = correlations.values
+    # frame = frame[frame['values'] > 0.2]
+    # result = np.asarray(frame['key']).astype('str')
+    # print(correlations)

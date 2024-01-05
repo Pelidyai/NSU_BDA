@@ -117,7 +117,6 @@ TOP_20_EMPLOYER = {
     "детский"
 }
 
-
 TOP_20_AREAS = {
     "москва",
     "санкт-,петербург"
@@ -306,6 +305,7 @@ def preprocess_data(data: DataFrame,
                     skip_filling: bool = False,
                     skip_date_preprocess: bool = False,
                     skip_categorical_predictions: bool = False,
+                    skip_second_drop: bool = False,
                     skip_model_preprocess: bool = False) -> DataFrame:
     data = data.copy()
     if not skip_drop:
@@ -345,8 +345,17 @@ def preprocess_data(data: DataFrame,
     if not skip_categorical_predictions:  # 7
         data = add_prediction_by_categorical(data)
         data = add_nn_prediction_by_categorical(data)
+    if not skip_second_drop:
+        data = data[
+            ['id',
+             'salary_from', 'desc_length', 'name_0', 'description_0',
+             'salary_to_by_name_desc', 'salary_to_by_name_desc_nn', 'published_at_year',
+             'created_at_year', 'salary_to_by_categorical', 'salary_to_by_categorical_nn'
+             ]
+        ]
     if not skip_model_preprocess:  # 8
         data = preprocess_with_models(data)
+
     return data
 
 

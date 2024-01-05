@@ -6,7 +6,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
 from support.constants import TARGET_NAME, EVAL_MODELS_DIR
-from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_norm_data, get_min_model_error
+from support.functions import load_x_prepared_train_data, smape_loss, get_min_model_error, \
+    load_y_train_data
 
 
 def train(x, y, save_dir, model, n=100, m=5):
@@ -33,7 +34,7 @@ def train(x, y, save_dir, model, n=100, m=5):
 
 def main():
     x_data = load_x_prepared_train_data()
-    y_data = load_y_train_norm_data()[TARGET_NAME]
+    y_data = load_y_train_data()[TARGET_NAME]
     x_data = x_data.drop(['id'], axis=1)
 
     x_data = np.asarray(x_data).astype('float32')
