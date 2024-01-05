@@ -319,13 +319,13 @@ def preprocess_data(data: DataFrame,
         data.salary_gross = data.salary_gross.replace({True: 1, False: 0})
         data.has_test = data.has_test.replace({True: 1, False: 0})
         data.response_letter_required = data.response_letter_required.replace({True: 1, False: 0})
-    # data.to_csv('save.csv')
-    # if not skip_filling:  # 5
-    #     data = fill_salary_from(data)
-    #     data = logo_normalize(data, SALARY_FROM_KEY)
-    # if not skip_date_preprocess:  # 6
-    #     data = preprocess_date(data, 'published_at')
-    #     data = preprocess_date(data, 'created_at')
+    data.to_csv('save.csv')
+    if not skip_filling:  # 5
+        data = fill_salary_from(data)
+        data = logo_normalize(data, SALARY_FROM_KEY)
+    if not skip_date_preprocess:  # 6
+        data = preprocess_date(data, 'published_at')
+        data = preprocess_date(data, 'created_at')
     # if not skip_categorical_predictions:  # 7
     #     data = add_prediction_by_categorical(data)
     # if not skip_model_preprocess:  # 8
