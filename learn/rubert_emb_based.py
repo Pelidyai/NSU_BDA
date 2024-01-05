@@ -1,15 +1,15 @@
 import os
 
 import numpy as np
+import tensorflow as tf
 from pandas import DataFrame
 from sklearn.model_selection import train_test_split
+from tensorflow.python.keras import activations
 
 from support.constants import (TARGET_NAME, RU_BERT_BASED_NAME_CHECKPOINT_DIR, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR,
                                NAMES_PRE_FEATURES, DESC_PRE_FEATURES, BERT_MODEL_OUT_SIZE)
-from support.functions import load_x_prepared_train_data, load_y_train_norm_data, smape_loss, split_to_batches
-
-import tensorflow as tf
-from tensorflow.python.keras import activations
+from support.functions import load_x_prepared_train_data, smape_loss, split_to_batches, \
+    load_y_train_data
 
 
 class RuBertBasedModel(tf.keras.Model):
@@ -41,7 +41,7 @@ def create_and_learn_rubert_text_models(x, y,
         save_best_only=True,
         save_weights_only=True)
     model.fit(x_train, y_train, verbose=1, validation_data=(x_test, y_test),
-              batch_size=128, epochs=500, shuffle=True, callbacks=[cp_callback])
+              batch_size=128, epochs=1000, shuffle=True, callbacks=[cp_callback])
     return model
 
 
@@ -54,7 +54,7 @@ def load_work_rubert_text_model(checkpoint_dir: str) -> RuBertBasedModel:
 
 def main():
     x_data = load_x_prepared_train_data()
-    y_data = load_y_train_norm_data()
+    y_data = load_y_train_data()
 
     y_data = np.asarray(y_data[TARGET_NAME]).astype('float32')
     create_and_learn_rubert_text_models(np.asarray(x_data[NAMES_PRE_FEATURES]).astype('float32'), y_data,
@@ -92,13 +92,13 @@ def preprocess_text_with_rubert(data: DataFrame, checkpoint_dir: str, inputs, x_
 
 
 if __name__ == '__main__':
-    main()
+    # main()
 
-    # x_data = load_x_prepared_train_data()
-    # x_data = preprocess_text_with_rubert(x_data, RU_BERT_BASED_NAME_CHECKPOINT_DIR,
-    #                                      np.asarray(x_data[NAMES_PRE_FEATURES]).astype('float64'), 'name')
-    # x_data = x_data.drop(NAMES_PRE_FEATURES[BERT_MODEL_OUT_SIZE:], axis=1)
-    # x_data = preprocess_text_with_rubert(x_data, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR,
-    #                                      np.asarray(x_data[DESC_PRE_FEATURES]).astype('float64'), 'description')
-    # x_data = x_data.drop(DESC_PRE_FEATURES[BERT_MODEL_OUT_SIZE:], axis=1)
-    # x_data.to_csv('buf.csv')
+    x_data = load_x_prepared_train_data()
+    x_data = preprocess_text_with_rubert(x_data, RU_BERT_BASED_NAME_CHECKPOINT_DIR,
+                                         np.asarray(x_data[NAMES_PRE_FEATURES]).astype('float64'), 'name')
+    x_data = x_data.drop(NAMES_PRE_FEATURES[BERT_MODEL_OUT_SIZE:], axis=1)
+    x_data = preprocess_text_with_rubert(x_data, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR,
+                                         np.asarray(x_data[DESC_PRE_FEATURES]).astype('float64'), 'description')
+    x_data = x_data.drop(DESC_PRE_FEATURES[BERT_MODEL_OUT_SIZE:], axis=1)
+    x_data.to_csv('buf.csv', index=False)

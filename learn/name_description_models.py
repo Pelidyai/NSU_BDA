@@ -2,8 +2,7 @@ import os
 import pickle
 
 import numpy as np
-from sklearn.ensemble import RandomForestRegressor, AdaBoostRegressor
-from sklearn.neural_network import MLPRegressor
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
 from preprocessing.preprocessing import inverse
@@ -35,32 +34,11 @@ def train(x, y, save_dir, model, n=100):
 
 def main():
     x_data = load_x_prepared_train_data()
-    y_data = load_y_train_norm_data()
+    y_data = load_y_train_data()
 
     x_data = np.asarray(x_data[NAMES_AND_DESC_FEATURES]).astype('float32')
     y_data = np.asarray(y_data[TARGET_NAME]).astype('float32')
     train(x_data, y_data, NAME_DESC_MODELS_DIR, RandomForestRegressor(n_estimators=100, max_features=5))
-    # train(x_data, y_data, NAME_DESC_MODELS_DIR, GradientBoostingRegressor(verbose=1))
-    # train(x_data, y_data, NAME_DESC_MODELS_DIR, MLPRegressor(hidden_layer_sizes=(64, 32, 8), activation='identity'))
-
-
-def main_test():
-    x_data = load_x_prepared_train_data()
-    x_data = np.asarray(x_data[NAMES_AND_DESC_FEATURES]).astype('float32')
-
-    y_data = load_y_train_data()
-    y_data = np.asarray(y_data[TARGET_NAME]).astype('float32')
-
-    y_data_norm = load_y_train_norm_data()
-    y_data_norm = np.asarray(y_data_norm[TARGET_NAME]).astype('float32')
-
-    with open(NAME_DESC_MODELS_DIR + "/best.pickaim", 'rb') as file:
-        model = pickle.load(file)
-        result_norm = np.asarray(model.predict(x_data)).astype('float32')
-        error_norm = smape_loss(y_data_norm, result_norm).numpy().mean()
-        result = inverse(result_norm)
-        error = smape_loss(y_data, result).numpy().mean()
-        print(error_norm, error)
 
 
 if __name__ == '__main__':
