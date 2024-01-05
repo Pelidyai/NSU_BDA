@@ -5,13 +5,13 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from tensorflow.python.keras import activations
 
-from support.constants import TARGET_NAME, FINAL_MODELS_DIR
+from support.constants import TARGET_NAME, EVAL_MODELS_DIR
 from support.functions import load_x_prepared_train_data, load_y_train_norm_data, smape_loss
 
 
-class FinalModel(tf.keras.Model):
+class EvaluateModel(tf.keras.Model):
     def __init__(self, is_work: bool = False):
-        super(FinalModel, self).__init__(name='')
+        super(EvaluateModel, self).__init__(name='')
         self.is_work = is_work
         self.first = tf.keras.layers.Dense(64, activation=activations.linear)
         self.second = tf.keras.layers.Dense(32, activation=activations.softplus)
@@ -28,7 +28,7 @@ def create_and_learn_evaluate_models(x, y,
                                      model_name: str,
                                      checkpoints_dir: str) -> tf.keras.Model:
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
-    model = FinalModel()
+    model = EvaluateModel()
     checkpoint_name = model_name + '-{epoch:04d}.ckpt'
     checkpoint_filepath = os.path.join(checkpoints_dir, checkpoint_name)
     model.compile(tf.keras.optimizers.Adam(), loss=smape_loss)
@@ -50,7 +50,7 @@ def main():
 
     x_data = np.asarray(x_data).astype('float32')
     y_data = np.asarray(y_data).astype('float32')
-    create_and_learn_evaluate_models(x_data, y_data, "final_model", FINAL_MODELS_DIR)
+    create_and_learn_evaluate_models(x_data, y_data, "eval_model", EVAL_MODELS_DIR)
 
 
 if __name__ == '__main__':

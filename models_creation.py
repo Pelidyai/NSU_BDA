@@ -12,10 +12,12 @@ from transformers import AutoTokenizer, AutoModel
 import tensorflow_text as text
 
 from learn.categorical_models2 import CategoricalModel
+from learn.evaluate_model2 import EvaluateModel
+from learn.final_model_2 import FinalModel
 from learn.name_description_models2 import NameDescModel
 from support.bert import BERT_PREPROCESS_LINK, BERT_ENCODER_LINK
 from support.constants import NAME_DESC_MODELS_DIR, BERT_MODEL_OUT_SIZE, SALARY_FROM_RECOVER_MODELS_DIR, \
-    CATEGORICAL_DIR, FINAL_MODELS_DIR, ENSEMBLE_MODELS_DIR, RU_BERT_DIR
+    CATEGORICAL_DIR, FINAL_MODELS_DIR, ENSEMBLE_MODELS_DIR, RU_BERT_DIR, EVAL_MODELS_DIR
 
 tf.get_logger().setLevel('ERROR')
 
@@ -99,8 +101,27 @@ def load_categorical_nn_model(checkpoint_dir: str) -> BertBasedModel:
     return loaded_model
 
 
+def load_eval_nn_model(checkpoint_dir: str) -> BertBasedModel:
+    loaded_model = EvaluateModel(is_work=True)
+    latest = tf.train.latest_checkpoint(checkpoint_dir)
+    loaded_model.load_weights(latest)
+    return loaded_model
+
+
+def load_final_model(checkpoint_dir: str) -> BertBasedModel:
+    loaded_model = FinalModel(is_work=True)
+    latest = tf.train.latest_checkpoint(checkpoint_dir)
+    loaded_model.load_weights(latest)
+    return loaded_model
+
+
 def create_name_description_model() -> MLPRegressor:
     return MLPRegressor(hidden_layer_sizes=(8, 8, 1))
+
+
+def load_eval_model() -> Any:
+    with open(EVAL_MODELS_DIR + "/best.pickaim", 'rb') as file:
+        return pickle.load(file)
 
 
 def load_name_desc_model() -> Any:

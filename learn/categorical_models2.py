@@ -26,9 +26,9 @@ class CategoricalModel(tf.keras.Model):
         return x
 
 
-def create_and_learn_name_desc_models(x, y,
-                                      model_name: str,
-                                      checkpoints_dir: str) -> tf.keras.Model:
+def create_and_learn_categorical_models(x, y,
+                                        model_name: str,
+                                        checkpoints_dir: str) -> tf.keras.Model:
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
     model = CategoricalModel()
     checkpoint_name = model_name + '-{epoch:04d}.ckpt'
@@ -52,7 +52,7 @@ def main():
     x_data = x_data[CATEGORICAL_FEATURES]
     x_data = np.asarray(x_data).astype('bool')
     y_data = np.asarray(y_data).astype('float32')
-    create_and_learn_name_desc_models(x_data, y_data,
+    create_and_learn_categorical_models(x_data, y_data,
                                       "categorical_model", CATEGORICAL_DIR)
 
 

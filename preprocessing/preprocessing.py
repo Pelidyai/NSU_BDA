@@ -8,11 +8,11 @@ from pandas import DataFrame
 
 from learn.rubert_emb_based import load_work_rubert_text_model
 from models_creation import load_work_text_model, load_name_desc_model, load_salary_from_model, load_categorical_model, \
-    RuBert, load_name_desc_nn_model, load_categorical_nn_model
+    RuBert, load_name_desc_nn_model, load_categorical_nn_model, load_eval_nn_model, load_eval_model
 from support.constants import BERT_BASED_NAME_CHECKPOINT_DIR, BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
     NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES, SALARY_FROM_KEY, CATEGORICAL_KEY, MLP_MODEL_PATH, \
     GRAD_MODEL_PATH, RFR_MODEL_PATH, RU_BERT_BASED_NAME_CHECKPOINT_DIR, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
-    RU_NAME_DESC_MODELS_DIR, CATEGORICAL_FEATURES, CATEGORICAL_DIR
+    RU_NAME_DESC_MODELS_DIR, CATEGORICAL_FEATURES, CATEGORICAL_DIR, EVAL_MODELS_DIR
 from support.functions import prepare_text, split_to_batches
 
 
@@ -280,19 +280,17 @@ def preprocess_with_models(data: DataFrame) -> DataFrame:
     original_data = data
     data = data.copy()
     data = data.drop(['id'], axis=1)
+    data = np.asarray(data).astype('float32')
+    nn_eval_model = load_eval_nn_model(EVAL_MODELS_DIR)
+    eval_nn_result = nn_eval_model.predict(data)
 
-    with open(MLP_MODEL_PATH, 'rb') as file:
-        mlp_model = pickle.load(file)
-    with open(GRAD_MODEL_PATH, 'rb') as file:
-        grad_model = pickle.load(file)
-    with open(RFR_MODEL_PATH, 'rb') as file:
-        rfr_model = pickle.load(file)
-    x = np.asarray(data).astype('float32')
+    eval_model = load_eval_model()
+    eval_result = eval_model.predict(data)
+
     result = DataFrame()
     result['id'] = original_data['id']
-    result['mlp'] = mlp_model.predict(x)
-    result['grad'] = grad_model.predict(x)
-    result['rfr'] = rfr_model.predict(x)
+    result['eval'] = eval_result
+    result['nn_eval'] = eval_nn_result
     return result
 
 
@@ -345,8 +343,8 @@ def preprocess_data(data: DataFrame,
         data = add_nn_prediction_by_name_desc(data)
         data = add_prediction_by_categorical(data)
         data = add_nn_prediction_by_categorical(data)
-    # if not skip_model_preprocess:  # 8
-    #     data = preprocess_with_models(data)
+    if not skip_model_preprocess:  # 8
+        data = preprocess_with_models(data)
     return data
 
 
