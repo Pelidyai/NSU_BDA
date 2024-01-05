@@ -56,6 +56,11 @@ DESC_PRE_FEATURES = [f"description_{i}" for i in range(312)]
 
 TRAIN_FEATURE = ['name', 'has_test', 'response_letter_required', 'salary_from', 'salary_currency', 'salary_gross',
                  'published_at', 'created_at', 'employer_name', 'description', 'area_id', 'area_name']
+
+CATEGORICAL_FEATURES = ['has_test', 'response_letter_required', 'salary_gross', 'employer_name',
+                        'area_name', 'published_at_year', 'created_at_year',
+                        *[f"published_at_month_{i}" for i in range(12)],
+                        *[f"created_at_month_{i}" for i in range(12)]]
 TARGET_NAME = 'salary_to'
 
 NAME_DESC_PREDICTION_KEY = 'salary_to_by_name_desc'

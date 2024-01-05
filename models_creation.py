@@ -11,6 +11,8 @@ from transformers import AutoTokenizer, AutoModel
 
 import tensorflow_text as text
 
+from learn.categorical_models2 import CategoricalModel
+from learn.name_description_models2 import NameDescModel
 from support.bert import BERT_PREPROCESS_LINK, BERT_ENCODER_LINK
 from support.constants import NAME_DESC_MODELS_DIR, BERT_MODEL_OUT_SIZE, SALARY_FROM_RECOVER_MODELS_DIR, \
     CATEGORICAL_DIR, FINAL_MODELS_DIR, ENSEMBLE_MODELS_DIR, RU_BERT_DIR
@@ -78,6 +80,20 @@ class RuBert:
 
 def load_work_text_model(checkpoint_dir: str) -> BertBasedModel:
     loaded_model = BertBasedModel(is_work=True)
+    latest = tf.train.latest_checkpoint(checkpoint_dir)
+    loaded_model.load_weights(latest)
+    return loaded_model
+
+
+def load_name_desc_nn_model(checkpoint_dir: str) -> BertBasedModel:
+    loaded_model = NameDescModel(is_work=True)
+    latest = tf.train.latest_checkpoint(checkpoint_dir)
+    loaded_model.load_weights(latest)
+    return loaded_model
+
+
+def load_categorical_nn_model(checkpoint_dir: str) -> BertBasedModel:
+    loaded_model = CategoricalModel(is_work=True)
     latest = tf.train.latest_checkpoint(checkpoint_dir)
     loaded_model.load_weights(latest)
     return loaded_model
