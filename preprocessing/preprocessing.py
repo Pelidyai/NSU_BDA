@@ -191,7 +191,6 @@ def add_prediction_by_name_desc(data: DataFrame) -> DataFrame:
     x = np.asarray(data[NAMES_AND_DESC_FEATURES]).astype('float32')
     model = load_name_desc_model()
     y = np.asarray(model.predict(x)).astype('float32')
-    # data = data.drop(NAMES_AND_DESC_FEATURES, axis=1)
     data[NAME_DESC_PREDICTION_KEY] = y
     return data
 
@@ -311,16 +310,15 @@ def preprocess_data(data: DataFrame,
     if not skip_models_text_preprocessing:  # 2
         data = preprocess_text_with_rubert(data, RU_BERT_BASED_NAME_CHECKPOINT_DIR, 'name')
         data = preprocess_text_with_rubert(data, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, 'description')
-    # if not skip_name_desc_prediction:  # 3
-    #     data = add_prediction_by_name_desc(data)
-    # data.to_csv('save.csv')
-    # if not skip_simple_mappings:  # 4
-    #     data = preprocess_salary_gross(data)
-    #     data = preprocess_employer_name_to_int(data)
-    #     data = preprocess_area_name_to_int(data)
-    #     data.salary_gross = data.salary_gross.replace({True: 1, False: 0})
-    #     data.has_test = data.has_test.replace({True: 1, False: 0})
-    #     data.response_letter_required = data.response_letter_required.replace({True: 1, False: 0})
+    if not skip_name_desc_prediction:  # 3
+        data = add_prediction_by_name_desc(data)
+    if not skip_simple_mappings:  # 4
+        data = preprocess_salary_gross(data)
+        data = preprocess_employer_name_to_int(data)
+        data = preprocess_area_name_to_int(data)
+        data.salary_gross = data.salary_gross.replace({True: 1, False: 0})
+        data.has_test = data.has_test.replace({True: 1, False: 0})
+        data.response_letter_required = data.response_letter_required.replace({True: 1, False: 0})
     # data.to_csv('save.csv')
     # if not skip_filling:  # 5
     #     data = fill_salary_from(data)

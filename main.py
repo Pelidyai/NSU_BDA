@@ -13,7 +13,7 @@ from support.functions import load_x_train_data, load_x_prepared_train_data, loa
 def main_x():
     data = load_x_prepared_train_data()
     data = preprocess_data(data, skip_drop=True, skip_text_preprocessing=True,
-                           skip_models_text_preprocessing=False, skip_name_desc_prediction=False,
+                           skip_models_text_preprocessing=True, skip_name_desc_prediction=True,
                            skip_simple_mappings=False, skip_filling=False, skip_date_preprocess=False,
                            skip_categorical_predictions=False, skip_model_preprocess=False)
     data.to_csv('data/buf.csv', index=False)
