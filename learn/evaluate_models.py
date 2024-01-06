@@ -16,7 +16,7 @@ def train(x, y, save_dir, model, n=100, m=5):
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
         # for j in range(m):
         model.fit(x_train, y_train)
-        print("iteration#", i + 1, "fit#","___________________________")
+        print("iteration#", i + 1, "fit#", "___________________________")
         pred = np.asarray(model.predict(x_test)).astype('float32')
         valid_error = np.asarray(smape_loss(y_test, pred)).astype('float32').mean()
         print("valid MAE:", valid_error)
@@ -39,7 +39,7 @@ def main():
 
     x_data = np.asarray(x_data).astype('float32')
     y_data = np.asarray(y_data).astype('float32')
-    train(x_data, y_data, EVAL_MODELS_DIR, RandomForestRegressor(n_estimators=100, max_features=5))
+    train(x_data, y_data, EVAL_MODELS_DIR, RandomForestRegressor(n_estimators=100, max_features=5, warm_start=True))
 
 
 if __name__ == '__main__':

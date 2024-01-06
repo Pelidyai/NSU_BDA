@@ -334,7 +334,7 @@ def preprocess_data(data: DataFrame,
         data.salary_gross = data.salary_gross.replace({True: 1, False: 0})
         data.has_test = data.has_test.replace({True: 1, False: 0})
         data.response_letter_required = data.response_letter_required.replace({True: 1, False: 0})
-    data.to_csv('save.csv')
+    data.to_csv('save.csv', index=False)
     if not skip_filling:  # 5
         data = fill_salary_from(data)
         data = logo_normalize(data, SALARY_FROM_KEY)

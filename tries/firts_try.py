@@ -11,7 +11,7 @@ from support.functions import load_x_test_data
 def preprocess_x_test():
     data = load_x_test_data()
     data = preprocess_text(data, 'name')
-    data.to_csv('prep_x_test.csv')
+    data.to_csv('prep_x_test.csv', index=False)
 
 
 def main():
