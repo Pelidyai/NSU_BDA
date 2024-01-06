@@ -66,4 +66,4 @@ if __name__ == '__main__':
     # frame['values'] = correlations.values
     # frame = frame[frame['values'] > 0.2]
     # result = np.asarray(frame['key']).astype('str')
-    # print(result)
+    # print("', '".join(result))
