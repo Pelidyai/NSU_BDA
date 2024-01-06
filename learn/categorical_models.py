@@ -40,7 +40,7 @@ def main():
     x_data = x_data[CATEGORICAL_FEATURES]
     x_data = np.asarray(x_data).astype('bool')
     y_data = np.asarray(y_data).astype('float32')
-    train(x_data, y_data, CATEGORICAL_DIR, RandomForestRegressor(n_estimators=300, max_features=5, warm_start=True))
+    train(x_data, y_data, CATEGORICAL_DIR, RandomForestRegressor(n_estimators=300, max_features=5))
 
 
 if __name__ == '__main__':
