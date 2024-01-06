@@ -16,11 +16,15 @@ class RuBertBasedModel(tf.keras.Model):
     def __init__(self, is_work: bool = False):
         super(RuBertBasedModel, self).__init__(name='')
         self.is_work = is_work
-        self.first = tf.keras.layers.Dense(BERT_MODEL_OUT_SIZE, activation=activations.linear)
+        self.first = tf.keras.layers.Dense(32, activation=activations.linear)
+        self.dropout = tf.keras.layers.Dropout(rate=0.2)
+        self.second = tf.keras.layers.Dense(BERT_MODEL_OUT_SIZE, activation=activations.softplus)
         self.forth = tf.keras.layers.Dense(1, activation=activations.leaky_relu)
 
     def call(self, inputs, training=None, mask=None):
         x = self.first(inputs)
+        x = self.dropout(x)
+        x = self.second(x)
         if not self.is_work:
             x = self.forth(x)
         return x
@@ -41,7 +45,7 @@ def create_and_learn_rubert_text_models(x, y,
         save_best_only=True,
         save_weights_only=True)
     model.fit(x_train, y_train, verbose=1, validation_data=(x_test, y_test),
-              batch_size=128, epochs=500, shuffle=True, callbacks=[cp_callback])
+              batch_size=128, epochs=5000, shuffle=True, callbacks=[cp_callback])
     return model
 
 
@@ -101,4 +105,4 @@ if __name__ == '__main__':
     # x_data = preprocess_text_with_rubert(x_data, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR,
     #                                      np.asarray(x_data[DESC_PRE_FEATURES]).astype('float64'), 'description')
     # x_data = x_data.drop(DESC_PRE_FEATURES[BERT_MODEL_OUT_SIZE:], axis=1)
-    # x_data.to_csv('buf.csv')
+    # x_data.to_csv('buf.csv', index=False)
