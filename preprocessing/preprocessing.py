@@ -345,7 +345,7 @@ def preprocess_data(data: DataFrame,
     if not skip_categorical_predictions:  # 7
         data = add_prediction_by_categorical(data)
         data = add_nn_prediction_by_categorical(data)
-    if not skip_second_drop:
+    if not skip_second_drop:  # 7.5
         data = data[
             ['id',
              'salary_from', 'desc_length', 'name_1', 'name_4', 'name_6', 'name_7', 'description_0',

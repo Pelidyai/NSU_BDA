@@ -18,7 +18,7 @@ def main_x():
     data = preprocess_data(data, skip_drop=True, skip_text_preprocessing=True,
                            skip_models_text_preprocessing=True, skip_name_desc_prediction=True,
                            skip_simple_mappings=True, skip_filling=True, skip_date_preprocess=True,
-                           skip_categorical_predictions=False, skip_second_drop=True, skip_model_preprocess=True)
+                           skip_categorical_predictions=True, skip_second_drop=True, skip_model_preprocess=False)
     data.to_csv('data/buf.csv', index=False)
 
 
@@ -31,11 +31,11 @@ def main_y():
 
 
 if __name__ == '__main__':
-    main_x()
-    # data = pd.read_csv('tries/result_final_5k.csv')
-    #
-    # data[TARGET_NAME] = round_sum(np.asarray(data[TARGET_NAME]).astype('float32'))
-    # data.to_csv('tries/result_final_5k_cut2.csv', index=False)
+    # main_x()
+
+    data = pd.read_csv('tries/result_final_norm.csv')
+    data[TARGET_NAME] = round_sum(np.asarray(data[TARGET_NAME]).astype('float32'))
+    data.to_csv('tries/result_final_norm_cut.csv', index=False)
 
     # x_data = load_x_train_data()
     # # x_data = preprocess_date(x_data, 'published_at')
