@@ -5,12 +5,13 @@ import numpy as np
 from pandas import DataFrame
 
 from learn.rubert_emb_based import load_work_rubert_text_model
+from learn.salary_from_models2 import create_data_to_eval_salary_from, load_salary_from_nn_model
 from models_creation import load_work_text_model, load_name_desc_model, load_categorical_model, \
     RuBert, load_name_desc_nn_model, load_categorical_nn_model, load_eval_nn_model, load_eval_model, \
     load_salary_from_model
 from support.constants import NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES, SALARY_FROM_KEY, CATEGORICAL_KEY, \
     RU_BERT_BASED_NAME_CHECKPOINT_DIR, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
-    RU_NAME_DESC_MODELS_DIR, CATEGORICAL_FEATURES, CATEGORICAL_DIR, EVAL_MODELS_DIR
+    RU_NAME_DESC_MODELS_DIR, CATEGORICAL_FEATURES, CATEGORICAL_DIR, EVAL_MODELS_DIR, EVAL_SALARY_FROM_RECOVER_MODELS_DIR
 from support.functions import prepare_text, split_to_batches, logo_normalize
 
 
@@ -231,7 +232,9 @@ def fill_salary_from(data: DataFrame) -> DataFrame:
 
     x = x.drop([SALARY_FROM_KEY, 'id'], axis=1)
     x = np.asarray(x).astype('float32')
-    model = load_salary_from_model()
+    x = create_data_to_eval_salary_from(x)
+    x = np.asarray(x).astype('float32')
+    model = load_salary_from_nn_model(EVAL_SALARY_FROM_RECOVER_MODELS_DIR)
     y = np.asarray(model.predict(x)).astype('float32')
     copy = data[x_data_index].copy()
     copy[SALARY_FROM_KEY] = inverse(y)
@@ -344,9 +347,12 @@ def preprocess_data(data: DataFrame,
     if not skip_second_drop:
         data = data[
             ['id',
-             'salary_from', 'desc_length', 'name_0', 'description_0',
-             'salary_to_by_name_desc', 'salary_to_by_name_desc_nn', 'published_at_year',
-             'created_at_year', 'salary_to_by_categorical', 'salary_to_by_categorical_nn'
+             'salary_from', 'desc_length', 'name_0', 'name_1', 'name_2', 'name_3', 'name_4',
+             'name_5', 'name_6', 'name_7', 'description_0', 'description_1',
+             'description_2', 'description_3', 'description_4', 'description_5',
+             'description_6', 'description_7', 'salary_to_by_name_desc',
+             'salary_to_by_name_desc_nn', 'published_at_year', 'created_at_year',
+             'salary_to_by_categorical', 'salary_to_by_categorical_nn'
              ]
         ]
     if not skip_model_preprocess:  # 8

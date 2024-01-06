@@ -4,10 +4,14 @@ from support.functions import load_x_prepared_train_data
 
 def main_x():
     data = load_x_prepared_train_data()
+    try:
+        data = data.drop('Unnamed: 0', axis=1)
+    except Exception:
+        pass
     data = preprocess_data(data, skip_drop=True, skip_text_preprocessing=True,
                            skip_models_text_preprocessing=True, skip_name_desc_prediction=True,
                            skip_simple_mappings=True, skip_filling=True, skip_date_preprocess=True,
-                           skip_categorical_predictions=False, skip_second_drop=True, skip_model_preprocess=True)
+                           skip_categorical_predictions=True, skip_second_drop=True, skip_model_preprocess=False)
     data.to_csv('data/buf.csv', index=False)
 
 

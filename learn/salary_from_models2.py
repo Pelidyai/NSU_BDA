@@ -87,4 +87,4 @@ def main_eval():
 
 
 if __name__ == '__main__':
-    main()
+    main_eval()
