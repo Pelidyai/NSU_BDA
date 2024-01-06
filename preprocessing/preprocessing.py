@@ -7,12 +7,12 @@ from pandas import DataFrame
 from learn.rubert_emb_based import load_work_rubert_text_model
 from learn.salary_from_models2 import create_data_to_eval_salary_from, load_salary_from_nn_model
 from models_creation import load_work_text_model, load_name_desc_model, load_categorical_model, \
-    RuBert, load_name_desc_nn_model, load_categorical_nn_model, load_eval_nn_model, load_eval_model, \
-    load_salary_from_model
+    RuBert, load_name_desc_nn_model, load_categorical_nn_model, load_eval_nn_model, load_eval_model
 from support.constants import NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES, SALARY_FROM_KEY, CATEGORICAL_KEY, \
     RU_BERT_BASED_NAME_CHECKPOINT_DIR, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
     RU_NAME_DESC_MODELS_DIR, CATEGORICAL_FEATURES, CATEGORICAL_DIR, EVAL_MODELS_DIR, EVAL_SALARY_FROM_RECOVER_MODELS_DIR
-from support.functions import prepare_text, split_to_batches, logo_normalize
+from support.functions import prepare_text, split_to_batches, normalize_column
+from support.scaling import get_scaler, get_sf_scaler
 
 
 def preprocess_text(data: DataFrame, key: str) -> DataFrame:
@@ -337,7 +337,7 @@ def preprocess_data(data: DataFrame,
     data.to_csv('save.csv', index=False)
     if not skip_filling:  # 5
         data = fill_salary_from(data)
-        data = logo_normalize(data, SALARY_FROM_KEY)
+        data = normalize_column(data, SALARY_FROM_KEY, get_sf_scaler())
     if not skip_date_preprocess:  # 6
         data = preprocess_date(data, 'published_at')
         data = preprocess_date(data, 'created_at')
@@ -361,4 +361,11 @@ def preprocess_data(data: DataFrame,
 
 def inverse(y_to_inverse: Iterable) -> Iterable:
     y_to_inverse = np.asarray(list(map(lambda x: math.exp(x), y_to_inverse))).astype('float32')
-    return y_to_inverse
+    scaler = get_scaler()
+    transformed = scaler.inverse_transform(np.asarray(y_to_inverse).astype('float32').reshape(-1, 1))
+    return transformed
+
+
+def round_sum(y_to_round: Iterable) -> Iterable:
+    y_to_round = np.asarray(list(map(lambda x: round(x/10000, 0) * 10000, y_to_round))).astype('float32')
+    return y_to_round

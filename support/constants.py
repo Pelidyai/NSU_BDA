@@ -37,7 +37,7 @@ MLP_MODEL_PATH: str = get_path(file_dir, 'models/32_32_8mlp.pickaim')
 GRAD_MODEL_PATH: str = get_path(file_dir, 'models/grad.pickaim')
 RFR_MODEL_PATH: str = get_path(file_dir, 'models/simple-forest.pickaim')
 
-SCALER_PATH: str = get_path(file_dir, 'models/scaler/scaler.pickle')
+SCALER_PATH: str = get_path(file_dir, 'models/scaler')
 
 X_TRAIN_PATH: str = get_path(file_dir, "data/X_train.csv")
 PREP_X_TRAIN_PATH: str = get_path(file_dir, "data/prep_X_train.csv")

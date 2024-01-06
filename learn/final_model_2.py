@@ -14,12 +14,16 @@ class FinalModel(tf.keras.Model):
         super(FinalModel, self).__init__(name='')
         self.is_work = is_work
         self.first = tf.keras.layers.Dense(64, activation=activations.linear)
+        self.dropout = tf.keras.layers.Dropout(rate=0.1)
         self.second = tf.keras.layers.Dense(32, activation=activations.softplus)
+        self.dropout2 = tf.keras.layers.Dropout(rate=0.05)
         self.forth = tf.keras.layers.Dense(1, activation=activations.leaky_relu)
 
     def call(self, inputs, training=None, mask=None):
         x = self.first(inputs)
+        x = self.dropout(x)
         x = self.second(x)
+        x = self.dropout2(x)
         x = self.forth(x)
         return x
 
@@ -39,7 +43,7 @@ def create_and_learn_evaluate_models(x, y,
         save_best_only=True,
         save_weights_only=True)
     model.fit(x_train, y_train, verbose=1, validation_data=(x_test, y_test),
-              batch_size=128, epochs=500, shuffle=True, callbacks=[cp_callback])
+              batch_size=128, epochs=5000, shuffle=True, callbacks=[cp_callback])
     return model
 
 

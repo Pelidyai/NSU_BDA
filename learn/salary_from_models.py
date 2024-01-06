@@ -6,7 +6,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
 from support.constants import SALARY_FROM_RECOVER_MODELS_DIR, SALARY_FROM_KEY
-from support.functions import load_x_prepared_train_data, smape_loss, get_min_model_error, logo_normalize
+from support.functions import load_x_prepared_train_data, smape_loss, get_min_model_error, normalize_column
+from support.scaling import get_sf_scaler
 
 
 def train(x, y, save_dir, model, n=100):
@@ -33,7 +34,7 @@ def train(x, y, save_dir, model, n=100):
 def main():
     x_data = load_x_prepared_train_data()
     x_data = x_data[x_data[SALARY_FROM_KEY].notna()]
-    y_data = logo_normalize(x_data, SALARY_FROM_KEY)[SALARY_FROM_KEY]
+    y_data = normalize_column(x_data, SALARY_FROM_KEY, get_sf_scaler())[SALARY_FROM_KEY]
 
     x_data = x_data.drop([SALARY_FROM_KEY, 'id', 'created_at', 'published_at'], axis=1)
     x_data = np.asarray(x_data).astype('float32')

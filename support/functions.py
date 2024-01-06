@@ -1,13 +1,15 @@
 import math
 import os
 import re
-from typing import Any
+from typing import Any, Iterable
 
 import nltk.stem
+import numpy as np
 import pandas as pd
 import pymorphy2
-from pandas import DataFrame
 import tensorflow.python.keras.backend as K
+from pandas import DataFrame
+from sklearn.preprocessing import MinMaxScaler
 
 from support.constants import X_TRAIN_PATH, Y_TRAIN_PATH, PREP_X_TRAIN_PATH, Y_TRAIN_NORM_PATH, \
     X_TEST_PATH, PREP_X_TEST_PATH
@@ -95,7 +97,14 @@ def get_min_model_error(models_dir):
     return min_error
 
 
-def logo_normalize(data: DataFrame, target: str) -> DataFrame:
+def normalize(y_to_norm: Iterable, scaler: MinMaxScaler) -> Iterable:
+    transformed = scaler.transform(np.asarray(y_to_norm).astype('float32').reshape(-1, 1))
+    result = np.asarray(list(map(lambda x: math.log(x), transformed))).astype('float32')
+    return result
+
+
+def normalize_column(data: DataFrame, target: str, scaler: MinMaxScaler) -> DataFrame:
     normalized = data.copy()
-    normalized[target] = normalized[target].apply(math.log)
+    to_transform = np.asarray(data[target]).astype('float32')
+    normalized[target] = normalize(to_transform, scaler)
     return normalized
