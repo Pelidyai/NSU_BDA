@@ -39,8 +39,7 @@ def main():
     x_data = x_data.drop([SALARY_FROM_KEY, 'id', 'created_at', 'published_at'], axis=1)
     x_data = np.asarray(x_data).astype('float32')
     y_data = np.asarray(y_data).astype('float32')
-    train(x_data, y_data, SALARY_FROM_RECOVER_MODELS_DIR, RandomForestRegressor(n_estimators=100, max_features=5,
-                                                                                warm_start=True))
+    train(x_data, y_data, SALARY_FROM_RECOVER_MODELS_DIR, RandomForestRegressor(n_estimators=100, max_features=5))
 
 
 if __name__ == '__main__':

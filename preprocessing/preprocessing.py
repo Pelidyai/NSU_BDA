@@ -3,6 +3,7 @@ from typing import Iterable
 
 import numpy as np
 from pandas import DataFrame
+from sklearn.preprocessing import MinMaxScaler
 
 from learn.rubert_emb_based import load_work_rubert_text_model
 from learn.salary_from_models2 import create_data_to_eval_salary_from, load_salary_from_nn_model
@@ -237,7 +238,7 @@ def fill_salary_from(data: DataFrame) -> DataFrame:
     model = load_salary_from_nn_model(EVAL_SALARY_FROM_RECOVER_MODELS_DIR)
     y = np.asarray(model.predict(x)).astype('float32')
     copy = data[x_data_index].copy()
-    copy[SALARY_FROM_KEY] = inverse(y)
+    copy[SALARY_FROM_KEY] = inverse(y, get_sf_scaler())
     data[x_data_index] = copy
     return data
 
@@ -359,9 +360,8 @@ def preprocess_data(data: DataFrame,
     return data
 
 
-def inverse(y_to_inverse: Iterable) -> Iterable:
+def inverse(y_to_inverse: Iterable, scaler: MinMaxScaler = get_scaler()) -> Iterable:
     y_to_inverse = np.asarray(list(map(lambda x: math.exp(x), y_to_inverse))).astype('float32')
-    scaler = get_scaler()
     transformed = scaler.inverse_transform(np.asarray(y_to_inverse).astype('float32').reshape(-1, 1))
     return transformed
 
