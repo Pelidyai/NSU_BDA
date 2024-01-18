@@ -2,6 +2,7 @@ import os
 import pickle
 
 import numpy as np
+import tensorflow as tf
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
@@ -18,10 +19,10 @@ def train(x, y, save_dir, model, n=100):
         model.fit(x_train, y_train)
         print("iteration#", i + 1, "___________________________")
         pred = np.asarray(model.predict(x_test)).astype('float32')
-        valid_error = np.asarray(smape_loss(y_test, pred)).astype('float32').mean()
+        valid_error = np.asarray(tf.keras.losses.MAPE(y_test, pred)).astype('float32').mean()
         print("valid MAE:", valid_error)
         pred = np.asarray(model.predict(x_train)).astype('float32')
-        error = np.asarray(smape_loss(y_train, pred)).astype('float32').mean()
+        error = np.asarray(tf.keras.losses.MAPE(y_train, pred)).astype('float32').mean()
         print("train MAE:", error)
         print("best MAE:", min_error)
         if valid_error < min_error:

@@ -2,6 +2,7 @@ import os
 import pickle
 
 import numpy as np
+from keras.losses import MAPE
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import train_test_split
@@ -18,10 +19,10 @@ def train(x, y, save_dir, model, n=100, m=5):
         model.fit(x_train, y_train)
         print("iteration#", i + 1, "fit#", "___________________________")
         pred = np.asarray(model.predict(x_test)).astype('float32')
-        valid_error = np.asarray(smape_loss(y_test, pred)).astype('float32').mean()
+        valid_error = np.asarray(MAPE(y_test, pred)).astype('float32').mean()
         print("valid MAE:", valid_error)
         pred = np.asarray(model.predict(x_train)).astype('float32')
-        error = np.asarray(smape_loss(y_train, pred)).astype('float32').mean()
+        error = np.asarray(MAPE(y_train, pred)).astype('float32').mean()
         print("train MAE:", error)
         print("best MAE:", min_error)
         if valid_error < min_error:
@@ -35,15 +36,11 @@ def train(x, y, save_dir, model, n=100, m=5):
 def main():
     x_data = load_x_prepared_train_data()
     y_data = load_y_train_norm_data()[TARGET_NAME]
-
     x_data = x_data.drop(['id'], axis=1)
+
     x_data = np.asarray(x_data).astype('float32')
     y_data = np.asarray(y_data).astype('float32')
-    train(x_data, y_data, FINAL_MODELS_DIR, MLPRegressor(hidden_layer_sizes=(32, 32, 8), max_iter=1000,
-                                                         warm_start=True, learning_rate="invscaling"), n=1000)
-    # MLPRegressor(hidden_layer_sizes=(32, 32, 8), max_iter=1000,
-    #                                                          warm_start=True, learning_rate="invscaling"), n=1000)
-    #  RandomForestRegressor(n_estimators=100) 25.51
+    train(x_data, y_data, FINAL_MODELS_DIR, RandomForestRegressor(n_estimators=100, max_features=5))
 
 
 if __name__ == '__main__':

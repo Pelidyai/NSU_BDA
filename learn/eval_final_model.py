@@ -3,16 +3,16 @@ import pickle
 
 import numpy as np
 from keras.losses import MAPE
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
+from sklearn.neural_network import MLPRegressor
 from sklearn.model_selection import train_test_split
 
-from support.constants import TARGET_NAME, CATEGORICAL_DIR, \
-    CATEGORICAL_FEATURES
-from support.functions import load_x_prepared_train_data, smape_loss, get_min_model_error, \
-    load_y_train_norm_data
+from support.constants import TARGET_NAME, FINAL_MODELS_DIR, SALARY_FROM_KEY, NAME_DESC_PREDICTION_KEY, \
+    EVAL_FINAL_MODELS_DIR
+from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_norm_data, get_min_model_error
 
 
-def train(x, y, save_dir, model, n=500, m=5):
+def train(x, y, save_dir, model, n=100, m=5):
     min_error = get_min_model_error(save_dir)
     for i in range(n):
         x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
@@ -37,11 +37,11 @@ def train(x, y, save_dir, model, n=500, m=5):
 def main():
     x_data = load_x_prepared_train_data()
     y_data = load_y_train_norm_data()[TARGET_NAME]
+    x_data = x_data.drop(['id'], axis=1)
 
-    x_data = x_data[CATEGORICAL_FEATURES]
-    x_data = np.asarray(x_data).astype('bool')
+    x_data = np.asarray(x_data).astype('float32')
     y_data = np.asarray(y_data).astype('float32')
-    train(x_data, y_data, CATEGORICAL_DIR, RandomForestRegressor(n_estimators=300, max_features=5))
+    train(x_data, y_data, EVAL_FINAL_MODELS_DIR, RandomForestRegressor(n_estimators=100, max_features=5))
 
 
 if __name__ == '__main__':

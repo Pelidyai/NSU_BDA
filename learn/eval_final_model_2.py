@@ -5,13 +5,13 @@ import tensorflow as tf
 from sklearn.model_selection import train_test_split
 from tensorflow.python.keras import activations
 
-from support.constants import TARGET_NAME, FINAL_MODELS_DIR
-from support.functions import load_x_prepared_train_data, smape_loss, load_y_train_norm_data, scheduler
+from support.constants import TARGET_NAME, FINAL_MODELS_DIR, EVAL_FINAL_MODELS_DIR
+from support.functions import load_x_prepared_train_data, load_y_train_norm_data, scheduler
 
 
-class FinalModel(tf.keras.models.Sequential):
+class EvalFinalModel(tf.keras.models.Sequential):
     def __init__(self, is_work: bool = False):
-        super(FinalModel, self).__init__(name='')
+        super(EvalFinalModel, self).__init__(name='')
         self.is_work = is_work
         self.add(tf.keras.layers.Dense(128, activation=activations.linear))
         self.add(tf.keras.layers.Dropout(rate=0.1))
@@ -23,7 +23,7 @@ class FinalModel(tf.keras.models.Sequential):
 
 
 def load_nn():
-    loaded_model = FinalModel(is_work=True)
+    loaded_model = EvalFinalModel(is_work=True)
     latest = tf.train.latest_checkpoint(FINAL_MODELS_DIR)
     loaded_model.load_weights(latest)
     return loaded_model
@@ -33,7 +33,7 @@ def create_and_learn_evaluate_models(x, y,
                                      model_name: str,
                                      checkpoints_dir: str) -> tf.keras.Model:
     x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, shuffle=True)
-    model = load_nn()
+    model = EvalFinalModel()  # load_nn()
     checkpoint_name = model_name + '-{epoch:04d}.ckpt'
     checkpoint_filepath = os.path.join(checkpoints_dir, checkpoint_name)
     model.compile(tf.keras.optimizers.Adam(), loss=tf.keras.losses.MAPE)
@@ -46,7 +46,7 @@ def create_and_learn_evaluate_models(x, y,
 
     model.fit(x_train, y_train, verbose=1, validation_data=(x_test, y_test),
               batch_size=16, epochs=5000, shuffle=True, callbacks=[cp_callback,
-                                                                   tf.keras.callbacks.LearningRateScheduler(scheduler)])
+                                                                   ])
     # tf.keras.callbacks.LearningRateScheduler(scheduler)
     return model
 
@@ -58,7 +58,7 @@ def main():
 
     x_data = np.asarray(x_data).astype('float32')
     y_data = np.asarray(y_data).astype('float32')
-    create_and_learn_evaluate_models(x_data, y_data, "final_model", FINAL_MODELS_DIR)
+    create_and_learn_evaluate_models(x_data, y_data, "eval_final_model", EVAL_FINAL_MODELS_DIR)
 
 
 if __name__ == '__main__':

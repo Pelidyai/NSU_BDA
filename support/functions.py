@@ -7,12 +7,13 @@ import nltk.stem
 import numpy as np
 import pandas as pd
 import pymorphy2
+import tensorflow as tf
 import tensorflow.python.keras.backend as K
 from pandas import DataFrame
 from sklearn.preprocessing import MinMaxScaler
 
 from support.constants import X_TRAIN_PATH, Y_TRAIN_PATH, PREP_X_TRAIN_PATH, Y_TRAIN_NORM_PATH, \
-    X_TEST_PATH, PREP_X_TEST_PATH
+    X_TEST_PATH, PREP_X_TEST_PATH, ENDPOINT_X_SCALE
 
 
 def smape_loss(y_true, y_pred):
@@ -97,9 +98,16 @@ def get_min_model_error(models_dir):
     return min_error
 
 
+def scheduler(epoch, lr):
+    if epoch < 5:
+        return lr
+    else:
+        return lr * tf.math.exp(-0.05)
+
+
 def normalize(y_to_norm: Iterable, scaler: MinMaxScaler) -> Iterable:
     transformed = scaler.transform(np.asarray(y_to_norm).astype('float32').reshape(-1, 1))
-    result = np.asarray(list(map(lambda x: math.log(x), transformed))).astype('float32')
+    result = np.asarray(list(map(lambda x: (math.log(x) + 1) * ENDPOINT_X_SCALE, transformed))).astype('float32')
     return result
 
 

@@ -20,6 +20,7 @@ RU_NAME_DESC_MODELS_DIR: str = get_path(file_dir, 'models/ru_name_desc')
 CATEGORICAL_DIR: str = get_path(file_dir, 'models/categorical')
 EVAL_MODELS_DIR: str = get_path(file_dir, 'models/eval')
 FINAL_MODELS_DIR: str = get_path(file_dir, 'models/final')
+EVAL_FINAL_MODELS_DIR: str = get_path(file_dir, 'models/eval_final')
 ENSEMBLE_MODELS_DIR: str = get_path(file_dir, 'models/ensemble')
 FINAL_MODELS_CHECKPOINT_DIR: str = get_path(file_dir, 'models/final_checkpoints')
 
@@ -63,8 +64,10 @@ CATEGORICAL_FEATURES = ['has_test', 'response_letter_required', 'salary_gross', 
                         'area_name', 'published_at_year', 'created_at_year',
                         *[f"published_at_month_{i}" for i in range(12)],
                         *[f"created_at_month_{i}" for i in range(12)]]
-TARGET_NAME = 'salary_to'
+THIRD_DROP_FEATURES = ['salary_from', 'salary_to_by_name_desc', 'salary_to_by_name_desc_nn', 'eval', 'nn_eval']
 
+TARGET_NAME = 'salary_to'
+ENDPOINT_X_SCALE = 1000
 NAME_DESC_PREDICTION_KEY = 'salary_to_by_name_desc'
 CATEGORICAL_KEY = 'salary_to_by_categorical'
 SALARY_FROM_KEY = 'salary_from'

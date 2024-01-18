@@ -8,10 +8,12 @@ from sklearn.preprocessing import MinMaxScaler
 from learn.rubert_emb_based import load_work_rubert_text_model
 from learn.salary_from_models2 import create_data_to_eval_salary_from, load_salary_from_nn_model
 from models_creation import load_work_text_model, load_name_desc_model, load_categorical_model, \
-    RuBert, load_name_desc_nn_model, load_categorical_nn_model, load_eval_nn_model, load_eval_model
+    RuBert, load_name_desc_nn_model, load_categorical_nn_model, load_eval_nn_model, load_eval_model, load_final_model, \
+    load_final_nn_model
 from support.constants import NAME_DESC_PREDICTION_KEY, NAMES_AND_DESC_FEATURES, SALARY_FROM_KEY, CATEGORICAL_KEY, \
     RU_BERT_BASED_NAME_CHECKPOINT_DIR, RU_BERT_BASED_DESCRIPTION_CHECKPOINT_DIR, \
-    RU_NAME_DESC_MODELS_DIR, CATEGORICAL_FEATURES, CATEGORICAL_DIR, EVAL_MODELS_DIR, EVAL_SALARY_FROM_RECOVER_MODELS_DIR
+    RU_NAME_DESC_MODELS_DIR, CATEGORICAL_FEATURES, CATEGORICAL_DIR, EVAL_MODELS_DIR, \
+    EVAL_SALARY_FROM_RECOVER_MODELS_DIR, THIRD_DROP_FEATURES, ENDPOINT_X_SCALE, FINAL_MODELS_DIR
 from support.functions import prepare_text, split_to_batches, normalize_column
 from support.scaling import get_scaler, get_sf_scaler
 
@@ -288,6 +290,24 @@ def preprocess_with_models(data: DataFrame) -> DataFrame:
     eval_model = load_eval_model()
     eval_result = eval_model.predict(data)
 
+    # result = DataFrame()
+    # result['id'] = original_data['id']
+    original_data['eval'] = eval_result
+    original_data['nn_eval'] = eval_nn_result
+    return original_data
+
+
+def preprocess_with_final_models(data: DataFrame) -> DataFrame:
+    original_data = data
+    data = data.copy()
+    data = data.drop(['id'], axis=1)
+    data = np.asarray(data).astype('float32')
+    nn_eval_model = load_final_nn_model(FINAL_MODELS_DIR)
+    eval_nn_result = nn_eval_model.predict(data)
+
+    eval_model = load_final_model()
+    eval_result = eval_model.predict(data)
+
     result = DataFrame()
     result['id'] = original_data['id']
     result['eval'] = eval_result
@@ -305,7 +325,9 @@ def preprocess_data(data: DataFrame,
                     skip_date_preprocess: bool = False,
                     skip_categorical_predictions: bool = False,
                     skip_second_drop: bool = False,
-                    skip_model_preprocess: bool = False) -> DataFrame:
+                    skip_model_preprocess: bool = False,
+                    skip_third_drop: bool = False,
+                    skip_final: bool = False) -> DataFrame:
     data = data.copy()
     if not skip_drop:
         try:
@@ -356,12 +378,17 @@ def preprocess_data(data: DataFrame,
         ]
     if not skip_model_preprocess:  # 8
         data = preprocess_with_models(data)
-
+    if not skip_third_drop:  # 9
+        data = data[
+            ['id', *THIRD_DROP_FEATURES]
+        ]
+    if not skip_final:  # 10
+        data = preprocess_with_final_models(data)
     return data
 
 
 def inverse(y_to_inverse: Iterable, scaler: MinMaxScaler = get_scaler()) -> Iterable:
-    y_to_inverse = np.asarray(list(map(lambda x: math.exp(x), y_to_inverse))).astype('float32')
+    y_to_inverse = np.asarray(list(map(lambda x: math.exp((x / ENDPOINT_X_SCALE) - 1), y_to_inverse))).astype('float32')
     transformed = scaler.inverse_transform(np.asarray(y_to_inverse).astype('float32').reshape(-1, 1))
     return transformed
 
